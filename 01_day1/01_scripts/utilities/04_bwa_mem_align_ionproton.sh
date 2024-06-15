@@ -20,7 +20,7 @@ cd $SLURM_SUBMIT_DIR
 # Global variables
 GENOMEFOLDER="02_genome"
 GENOME="genome_mallotus_dummy.fasta"
-DATAFOLDER="03_raw_reads"
+DATAFOLDER="03_raw_reads/fastqs"
 ALIGNEDFOLDER="04_aligned_files"
 NCPU=4 #should match what is asked to slurm in the header
 

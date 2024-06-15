@@ -1,5 +1,21 @@
-# Preliminary materials
+# Preliminary materials  <!-- omit from toc -->
 
+**Table of contents**
+
+- [Get familiarized with GitHub](#get-familiarized-with-github)
+- [Install software](#install-software)
+  - [----------- on server -----------](#------------on-server------------)
+    - [vcftools](#vcftools)
+    - [bcftools](#bcftools)
+    - [Python3+ (library pandas)](#python3-library-pandas)
+    - [Baypass](#baypass)
+    - [PLINK v1.9+](#plink-v19)
+    - [tabix](#tabix)
+    - [Stacks](#stacks)
+    - [snpEff](#snpeff)
+- [Update java for at least version 11](#update-java-for-at-least-version-11)
+    - [R packages](#r-packages)
+  - [----------- on local computer -----------](#------------on-local-computer------------)
 
 
 # Get familiarized with GitHub
@@ -10,7 +26,7 @@ Nice tutorial developed by Eric Normandeau https://github.com/enormandeau/github
 
 # Install software
 
-**OBS! The instructions below are tailored for a macOS operating system with an Apple M2 chip.**
+**OBS! The instructions below apply for a macOS operating system with an Apple M2 chip.**
 
 ## ----------- on server ----------- 
 
@@ -219,11 +235,11 @@ The pipeline is now ready to run.
 
 
 ### snpEff
-# Update your java for at least version 11
-https://apple.stackexchange.com/questions/461260/how-to-fix-error-java-lang-unsupportedclassversionerror-on-macos
-
+# Update java for at least version 11
+Instructions can be found here https://apple.stackexchange.com/questions/461260/how-to-fix-error-java-lang-unsupportedclassversionerror-on-macos
+```bash
 brew install openjdk@17
-
+```
 and then snpEff should run fine.
 
 ### R packages
