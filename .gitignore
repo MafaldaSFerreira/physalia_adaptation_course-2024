@@ -1,0 +1,17 @@
+*.fq.gz
+*.fq
+*.gz
+*.sam
+*.bam
+*.fa
+*.fasta
+*.fastq
+*.log
+*.bai
+*log_*
+*.vcf
+*.bcf
+*.bcf*
+*.swp
+*.save
+log*

@@ -1,0 +1,47 @@
+#---------- On server -----------
+
+## Softwares
+vcftools
+bcftools
+Python3+ (lib PANDAS)
+Baypass
+PLINK v1.9+
+tabix
+faststructure
+STACKS
+
+
+## R packages
+dplyr
+magrittr
+tibble
+ggplot2
+StAMPP
+varhandle
+reshape2
+edgeR
+vegan
+lostruct
+OutFlank
+vcfR
+ade4
+
+#----------- On local computer -----------
+
+## Softwares
+Rstudio
+R v.3.6.x
+
+## R packages
+Adegenet v2.1.2
+dplyr
+magrittr
+tibble
+ggplot2
+reshape2
+edgeR
+vegan
+gplots
+RColorBrewer
+SoDA
+vcfR
