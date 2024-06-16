@@ -34,7 +34,7 @@ Most exercises will be run using the cloud compute service [AWS](https://aws.ama
 
 - [R](https://www.r-project.org)
 - [RStudio](https://posit.co/download/rstudio-desktop/)
-- R packages listed [here](00_before_the_course/required_software_by_students.md)
+- R packages listed [here](00_before_the_course/software_required_by_students.md)
 - [FileZilla](https://filezilla-project.org)
 
 
