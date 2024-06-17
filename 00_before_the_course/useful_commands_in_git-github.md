@@ -1,4 +1,4 @@
-# Useful commands in Git/GitHub
+# Useful commands on Git/GitHub
 
 ## On Git and GitHub
 For a brief introduction to Git/GitHub developed by Eric Normandeau, check this [webpage](https://github.com/enormandeau/github_tutorial).
