@@ -34,7 +34,7 @@ Most exercises will be run using the cloud compute service [AWS](https://aws.ama
 
 - [R](https://www.r-project.org)
 - [RStudio](https://posit.co/download/rstudio-desktop/)
-- R packages listed [here](00_before_the_course/required_software_by_students.md)
+- R packages listed [here](00_before_the_course/software_required_by_students.md)
 - [FileZilla](https://filezilla-project.org)
 
 
@@ -53,14 +53,7 @@ Below you can find the proposed schedule for the week. We will maintain some fle
 ![schedule](images/schedule.png)
 
 ### Log in to the AWS server from your computer
->UPDATE INSTRUCTIONS WITH THE ONES TO BE GIVEN BY CARLO
-
-Please follow the [instructions shared by Carlo](instructions_on_AWS/Connection%20to%20the%20Amazon%20EC2%20service_.pdf).
-
-[Additional info for AWS for Mac OS X and Linux users](instructions_on_AWS/AWS_mac.md).
-
-[Additional info for AWS for Windows users using Putty/winSCP](instructions_on_AWS/AWS_windows.md).
-
+Please follow the [instructions shared by Carlo](Connection_to_the_Amazon_EC2_service_2024.pdf).
 
 ## Tutorials 
 
