@@ -1,1 +1,1 @@
-Useful scripts for day 1
+Useful scripts for day 1.

@@ -1,1 +1,1 @@
-This is the folder where you will write your scripts
+This is the folder scripts useful for day 1.

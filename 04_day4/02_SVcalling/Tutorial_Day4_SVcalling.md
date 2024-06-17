@@ -1,15 +1,17 @@
-# Structural Variant (SV) calling from whole genome resequencing data <!-- omit from toc -->
+# Day 4. Tutorial on SVs <!-- omit from toc -->
 
-Today we have explored the importance of structural variants in Ecology and Evolution, and you have tested different approaches to investigate haploblocks identified through reduced representation approaches such as RADseq. However, explicitely testing for the presence of SVs associated with haploblocks is not really possible with RADseq data (but see Yann's paper on detecting CNVs from RADseq data; [Dorant et al. 2020, Molecular Ecology](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.15565)), so we'll now use whole genome resequencing data (Illumina short reads) from a few capelin samples. From these data, we can call both SNPs (sequence variation - done Monday) and SVs (structural variation) and test whether the two provide concordant patterns of variation and differentiation, or not.
+## Table of contents <!-- omit from toc -->
+- [4-2. Structural Variant (SV) calling from whole genome resequencing data](#4-2-structural-variant-sv-calling-from-whole-genome-resequencing-data)
+    - [SVs calling](#svs-calling)
+    - [VCF filtering and splitting](#vcf-filtering-and-splitting)
+    - [PCA to compare patterns from different types of genetic variation](#pca-to-compare-patterns-from-different-types-of-genetic-variation)
 
-**Table of contents**
-- [1. SVs calling](#1-svs-calling)
-- [2. VCF filtering and splitting](#2-vcf-filtering-and-splitting)
-- [3. PCA to compare patterns from different types of genetic variation](#3-pca-to-compare-patterns-from-different-types-of-genetic-variation)
 
+# 4-2. Structural Variant (SV) calling from whole genome resequencing data
+oday we have explored the importance of structural variants in Ecology and Evolution, and you have tested different approaches to investigate haploblocks identified through reduced representation approaches such as RADseq. However, explicitely testing for the presence of SVs associated with haploblocks is not really possible with RADseq data (but see Yann's paper on detecting CNVs from RADseq data; [Dorant et al. 2020, Molecular Ecology](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.15565)), so we'll now use whole genome resequencing data (Illumina short reads) from a few capelin samples. From these data, we can call both SNPs (sequence variation - done Monday) and SVs (structural variation) and test whether the two provide concordant patterns of variation and differentiation, or not.
 
-### 1. SVs calling
-Calling structural variants (_i.e._ inversions, deletions, insertions, duplications, translocations) requires analyzing different types of information from the sequence data, such as read overlap, orientation and splitting. Therefore, we need software specifically designed to extract this kind of information. One commonly used of these programs is [Delly2](https://academic.oup.com/bioinformatics/article/28/18/i333/245403), which takes into account all of these 3 types of information. 
+### SVs calling
+Calling structural variants (i.e., inversions, deletions, insertions, duplications, translocations) requires analyzing different types of information from the sequence data, such as read overlap, orientation and splitting. Therefore, we need software specifically designed to extract this kind of information. One commonly used of these programs is [Delly2](https://academic.oup.com/bioinformatics/article/28/18/i333/245403), which takes into account all of these 3 types of information. 
 This below is the general approach to call SVs from Delly2:
 ```bash
 # germline SV calling
@@ -46,6 +48,7 @@ delly call -g ~/Share/ressources/genome_mallotus_dummy.fasta -o svs_delly/capeli
 # convert file from .bcf to .vcf
 cd svs_delly
 bcftools convert -O v -o capelin_sv.vcf capelin_sv.bcf
+
 ```
 To copy the VCF file containing all the SVs into `~/wgr/svs_delly`
 ```bash
@@ -59,15 +62,17 @@ cp ~/Share/WGS_bam/svs_delly/capelin_sv.vcf ~/wgr/svs_delly/.
 
 # copy also the popmap file
 cp ~/Share/WGS_bam/svs_delly/popmap_capelin_wgr_delly.txt ~/wgr/svs_delly/.
+
 ```
 
-### 2. VCF filtering and splitting
+### VCF filtering and splitting
 Though we don't have enough samples to run `delly filter` properly, we can do some filtering using the same approach we use for SNP filtering but in this case we'll filter just by missing data.
 ```bash
 vcftools --vcf capelin_sv.vcf \
     --max-missing 0.7 \
     --recode \
     --stdout > capelin_sv_filtered.vcf
+
 ```
 Then, we can split the VCF file by SV type (or extract one particular SV type of interest with this script
 ```bash
@@ -85,10 +90,12 @@ grep "#" capelin_sv_filtered.vcf > capelin_sv_dup.vcf && grep "SVTYPE=DUP" capel
 
 # breakends
 grep "#" capelin_sv_filtered.vcf > capelin_sv_bnd.vcf && grep "SVTYPE=BND" capelin_sv.vcf >> capelin_sv_bnd.vcf
+
 ```
 ... and count the number of SV identified, overall or for each type with:
 ```bash
 grep -v "#" capelin_sv_ins.vcf | wc -l
+
 ```
 What is the most abundant SV type?
 
@@ -103,11 +110,12 @@ vcftools --vcf capelin_sv_del.vcf --012 --out capelin_sv_del
 vcftools --vcf capelin_sv_inv.vcf --012 --out capelin_sv_inv
 vcftools --vcf capelin_sv_dup.vcf --012 --out capelin_sv_dup
 vcftools --vcf capelin_sv_bnd.vcf --012 --out capelin_sv_bnd
+
 ```
 Download the resulting files on your computer.
 
 
-### 3. PCA to compare patterns from different types of genetic variation
+### PCA to compare patterns from different types of genetic variation
 On your computer in R, perform one PCA and plot results based on each type of structural variant. The one below is the code for the PCA based on all SVs. Once you've done this, modify the script to perform the analysis on each type of SV and on the SNPs.
 ```R
 # load the population map with population assignment for each individual
@@ -142,7 +150,7 @@ sum.pca <- summary(pca.geno_capelin_sv)
 # print stats info
 sum.pca$importance[, 1:5]
 
-#prepare dataset to plot PCAs
+# prepare dataset to plot PCAs
 pca.geno_capelin_sv.sub <- pca.geno_capelin_sv$x[, 1:4] %>% # retain the first four PCs
   as.data.frame(.) %>% # transform to dataframe object
   tibble::rownames_to_column(., var = "Sample") %>% # set rownames to a new column for samples ids
@@ -163,9 +171,13 @@ You can find the vcf file generated by bcftools and filtered, as well as the gen
 You may copy it to your own directory with the following command.
 ```bash
 cd ~/wgr/snps_bcftools
+
 cp ~/Share/WGS_bam/snps_bcftools/capelin_wgs_filtered.vcf ~/wgr/snps_bcftools/.
+
 cp ~/Share/WGS_bam/snps_bcftools/capelin_wgs_filtered.012 ~/wgr/snps_bcftools/.
+
 cp ~/Share/WGS_bam/snps_bcftools/capelin_wgs_filtered.012* ~/wgr/snps_bcftools/.
+
 ```
 Now you can do the PCA as above. 
 Do you see the same patterns from each type of variant? Let's discuss.

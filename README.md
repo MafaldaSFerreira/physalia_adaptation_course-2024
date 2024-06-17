@@ -1,32 +1,80 @@
-# Physalia Adaptation Genomics Course
+# 2024 Physalia Adaptation Genomics Course <!-- omit from toc -->
 
-## Welcome to the Physalia Adaptation Genomics 2023 GitHub page
-This repository includes scripts and data associated with the practical sessions of the 2023 Physalia Course on Adaptation Genomics prepared by Anna Tigano, Yann Dorant and Claire Mérot.
+## Welcome 👋 <!-- omit from toc -->
+This GitHub page includes scripts, input data, and images associated with the practical sessions of the *2024 Physalia Course on Adaptation Genomics*, given by Mafalda Ferreira and Angela Fuentes Pardo.
 
-Except for day 1 in which you won't have the bam files, all the tutorial can be completed with the compressed files stored in the github page for each day (day 2 to day 5). Each daily tutorial can be run independantly of the other days.
+These materials correspond to modified versions of the original files developed (and generously shared) by Anna Tigano, Yann Dorant and Claire Mérot, which are available [here](https://github.com/clairemerot/physalia_adaptation_course).
 
-Here is the tentative schedule for the week. Within each block we'll keep some flexibility to have plenty of time for questions and discussion.
-![schedule](./images_tutorial/schedule.png)
+All tutorials (except for day 1) can be completed using the files provided in this GitHub page. Therefore, each tutorial can be run independently, ensuring that everyone can start fresh every day (even if they were unable to complete a previous practical session).
+
+## Table of contents <!-- omit from toc -->
+- [Before the course](#before-the-course)
+  - [Install required software](#install-required-software)
+  - [(Optional) Refresher on Unix and R](#optional-refresher-on-unix-and-r)
+- [During the course](#during-the-course)
+  - [Schedule](#schedule)
+  - [Log in to the AWS server from your computer](#log-in-to-the-aws-server-from-your-computer)
+- [Tutorials](#tutorials)
+  - [Visual overview](#visual-overview)
+  - [Day 1: Handling NGS data, from raw reads to SNPs matrix](#day-1-handling-ngs-data-from-raw-reads-to-snps-matrix)
+  - [Day 2: Population structure and confounding factors](#day-2-population-structure-and-confounding-factors)
+  - [Day 3: Outlier detection and Genome-by-Environment associations](#day-3-outlier-detection-and-genome-by-environment-associations)
+  - [Day 4: Accounting for Structural Variants](#day-4-accounting-for-structural-variants)
+  - [Day 5: Functional approaches](#day-5-functional-approaches)
+  - [Additional resources](#additional-resources)
+    - [Cheatsheet of bash commands](#cheatsheet-of-bash-commands)
+    - [Cheatsheet of R commands](#cheatsheet-of-r-commands)
 
 
-## Logging on the AWS server from your computer
-Please follow [the instructions sent by Carlo](Connection%20to%20the%20Amazon%20EC2%20service_.pdf)
+## Before the course
 
-[Additional info for AWS for Mac OS X and Linux users](https://github.com/clairemerot/physalia_adaptation_course/blob/2022/AWS_mac.md)
+### Install required software
 
-[Additional info for AWS for windows users using Putty/winSCP](https://github.com/clairemerot/physalia_adaptation_course/blob/2022/AWS_windows.md)
+Most exercises will be run using the cloud compute service [AWS](https://aws.amazon.com/), and others will be run on your local computer. Thus, please make sure you have installed on your computer the software listed below before the course begins:
 
-## Overview of the tutorials
+- [R](https://www.r-project.org)
+- [RStudio](https://posit.co/download/rstudio-desktop/)
+- R packages listed [here](00_before_the_course/required_software_by_students.md)
+- [FileZilla](https://filezilla-project.org)
 
-![workflow](workflow_tuto_physallia2023.jpg)
 
-## Day1: Handling NGS data: From raw reads to SNPs matrix
+**For Windows users:**
+- [MobaXterm](https://mobaxterm.mobatek.net)
 
-Data: All our analyses will be based on the dataset presented in [Cayuela et al. (2020), Molecular Ecology](https://onlinelibrary.wiley.com/doi/10.1111/mec.15499).
+
+### (Optional) Refresher on Unix and R
+A prerequisite of the course is that you are familiar with [Unix](https://en.wikipedia.org/wiki/Unix) and [R](https://www.r-project.org/). If you think you need a quick refresher of any of them, please take a look at the suggested readings available [here](00_before_the_course/readings_on_Unix_and_R.md).
+
+## During the course
+### Schedule
+Below you can find the proposed schedule for the week. We will maintain some flexibility in the schedule to allow enough time for questions and discussions.
+>UPDATE FIGURE
+
+![schedule](images/schedule.png)
+
+### Log in to the AWS server from your computer
+>UPDATE INSTRUCTIONS WITH THE ONES TO BE GIVEN BY CARLO
+
+Please follow the [instructions shared by Carlo](instructions_on_AWS/Connection%20to%20the%20Amazon%20EC2%20service_.pdf).
+
+[Additional info for AWS for Mac OS X and Linux users](instructions_on_AWS/AWS_mac.md).
+
+[Additional info for AWS for Windows users using Putty/winSCP](instructions_on_AWS/AWS_windows.md).
+
+
+## Tutorials 
+
+### Visual overview
+![workflow](images/workflow_tuto_physalia2024.jpg)
+
+### Day 1: Handling NGS data, from raw reads to SNPs matrix
+
+- **Data**: All exercises will be based on the dataset from [Cayuela et al. (2020), Molecular Ecology](https://onlinelibrary.wiley.com/doi/10.1111/mec.15499).
  
-Genome assembly: For this course, we generated a dummy assembly of about 90 MB (instead of about 500 MB) and 5 chromosomes (instead of 24) to expedite analysis running time.
+- **Genome assembly**: For this course, we generated a dummy assembly of about 90 MB (instead of about 500 MB) and 5 chromosomes (instead of 24) to expedite analysis running time.
 
-Raw data: Data were generated using a reduced-representation approach (GBS/RADseq) and sequenced with IonTorrent. Note that the analyses we'll learn during the course are scalable to whole genome resequencing data or other type of genomic data.
+- **Raw data**: Data were generated using a reduced-representation approach (GBS/RADseq) and sequenced with IonTorrent. 
+>Note that the analyses we will learn during the course are scalable to whole genome resequencing data or other type of genomic data.
 
 1-1: Getting familiar with Unix environment
 
@@ -34,41 +82,42 @@ Raw data: Data were generated using a reduced-representation approach (GBS/RADse
 
 1-3: Calling variants with Stacks
  
-## Day2: Population structure and confounding factors
+### Day 2: Population structure and confounding factors
 
-2-1: Fst statistics with vcftools (optional: with Stacks, optional: Pairwise-Fst and isolation-by-Distance )
+2-1: F<sub>ST</sub> statistics with vcftools (optional: with Stacks, optional: Pairwise-F<sub>ST</sub> and Isolation-by-Distance)
 
 2-2: Principal component analysis (PCA)
 
-2-3: Population clustering with FastStructure
+2-3: Population clustering with LEA
 
 2-4: Discriminant Analysis of Principal Components (DAPC)
 
-## Day3: Outlier detection - Environmental associations
+### Day 3: Outlier detection and Genome-by-Environment associations
 
-Data: We focus on 12 populations from Canada for which there is almost no geographic structure but great environmental variability
+- **Data**: We focus on 12 populations from Canada for which there is almost no geographic structure but great environmental variability.
 
 3-1: Genetic structure and LD-pruning
 
 3-2: Outlier of differentiation with two methods (Outflank & Baypass)
 
-3-3: Genotype-Environnement Associations with two methods (Baypass & redundancy analysis)
+3-3: Genotype-Environnement Associations with two methods (Baypass & Redundancy Analysis)
 
-## Day4: Accounting for Structural Variants
+### Day 4: Accounting for Structural Variants
+>TO UPDATE?
 
-We focus on 12 population from Canada. We recommend that you pick one of the two tutorials (haploblocks by local PCA or CNVs from RAD-seq data)
+- **Data**: We focus on 12 population from Canada. We recommend that you pick one of the two tutorials (haploblocks by local PCA or CNVs from RAD-seq data)
 
-4-1: Investigating haplotypes blocks ( ~inversions?)
+4-1: Investigating haplotypes blocks (~inversions?)
 
 This tutorial include working on local PCA, but also calculation of LD, Fst and observed fraction of heterozygotes which may be useful in other contexts
 
-4-2: Filtering duplicated loci in RAD-seq data ( ~ Copy number variants)
+4-2: Filtering duplicated loci in RAD-seq data (~ Copy Number Variants, CNVs)
 
 This tutorial show how to filter RAD loci to exclude duplicated ones (keep a reliable dataset for SNP analysis), and then how to analyse the duplicated loci for environmental associations.
 
 4-3: Detecting SV with Delly ??
 
-## Day5: Functional approaches
+### Day 5: Functional approaches
 
 5-1: SNPeff annotation of SNPs for coding & regulatory regions
 
@@ -78,5 +127,12 @@ This tutorial show how to filter RAD loci to exclude duplicated ones (keep a rel
 
 5-4: (Optional) Intersection between CNVs and repeats/TE
 
-## cheatsheet for terminal command lines
-![cheatsheet](./images_tutorial/bash_cheatsheet.png)
+### Additional resources
+
+#### Cheatsheet of bash commands
+> TO UPDATE! Blurry image
+![cheatsheet](images/bash_cheatsheet.png)
+
+#### Cheatsheet of R commands
+
+> TO BE ADDED

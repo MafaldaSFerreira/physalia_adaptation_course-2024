@@ -1,25 +1,25 @@
-# Day 3: Detecting putatively adaptive loci <!-- omit from toc -->
+# Day 3. Detecting putatively adaptive loci <!-- omit from toc -->
 
-**Table of contents**
+## Table of contents <!-- omit from toc -->
 
 - [Tutorial 1](#tutorial-1)
-  - [1. Overall genetic structure \& making a LD-pruned VCF file](#1-overall-genetic-structure--making-a-ld-pruned-vcf-file)
-  - [2. Investigate outliers of differentiation](#2-investigate-outliers-of-differentiation)
-    - [2.1 With OutFLANK](#21-with-outflank)
+  - [3-1. Overall genetic structure \& making a LD-pruned VCF file](#3-1-overall-genetic-structure--making-a-ld-pruned-vcf-file)
+  - [3-2. Investigate outliers of differentiation](#3-2-investigate-outliers-of-differentiation)
+    - [3-2.1 With OutFLANK](#3-21-with-outflank)
       - [Prepare the data](#prepare-the-data)
       - [Run OutFLANK on the LD-pruned SNPs and look at the distribution of FST](#run-outflank-on-the-ld-pruned-snps-and-look-at-the-distribution-of-fst)
       - [Run OutFLANK on all SNPs, corrected by the trim dataset](#run-outflank-on-all-snps-corrected-by-the-trim-dataset)
-    - [2.2 With BayPass](#22-with-baypass)
+    - [3-2.2 With BayPass](#3-22-with-baypass)
       - [Prepare files](#prepare-files)
       - [Run BayPass controlled for population structure](#run-baypass-controlled-for-population-structure)
       - [Set a threshold for the XtX value](#set-a-threshold-for-the-xtx-value)
       - [Visualise results in Rstudio on your local computer](#visualise-results-in-rstudio-on-your-local-computer)
 - [Tutorial 2](#tutorial-2)
-  - [3. Environmental association](#3-environmental-association)
-    - [3.1 With BayPass (locus by locus)](#31-with-baypass-locus-by-locus)
+  - [3-3. Genotype-Environment Associations](#3-3-genotype-environment-associations)
+    - [3-3.1 With BayPass (locus by locus)](#3-31-with-baypass-locus-by-locus)
       - [Get environmental data and format env file](#get-environmental-data-and-format-env-file)
       - [Visualise results in Rstudio on your local computer](#visualise-results-in-rstudio-on-your-local-computer-1)
-    - [3.2 With redundancy analysis (multi-loci)](#32-with-redundancy-analysis-multi-loci)
+    - [3-3.2 With Redundancy Analysis (RDA) (multi-loci)](#3-32-with-redundancy-analysis-rda-multi-loci)
       - [Prepare data](#prepare-data)
       - [Run RDA on environmental variable and test it](#run-rda-on-environmental-variable-and-test-it)
       - [Analyse the RDA output](#analyse-the-rda-output)
@@ -29,7 +29,7 @@
 # Tutorial 1
 Yesterday, we observed that our dataset included two highly divergent lineages (Canada vs. Greenland). Thus, to study environmental associations we will restrain our analysis to the Canadian 12 populations, which belong to the same lineage.
 
-To start, let's copy the folder **Day3** into your home directory, and go there with `cd`:
+To start, let's copy the directory **Day3** into your home directory, and go there with `cd`:
 ```bash
 cp -r ~/Share/physalia_adaptation_course/03_day3 .
 cd 03_day3 
@@ -49,14 +49,16 @@ You can have a look at the files with the command `head 02_data/file`, or `less 
 The VCF files need to be unzipped, which can be achieved with these commands:
 ```bash
 gunzip 02_data/canada.vcf.gz
+
 gunzip 02_data/canada_no45.vcf.gz
+
 ```
 
 To explore the first lines of the VCF file, you can use `less -S 02_data/filename`, which provides a nice visualization of the part of the file that fits your window, or `head -n 25 02_data/filename` to look at the first 25 lines.
 
-We will work from the `03_day3` folder, and we will save our data within their subfolder (for instance `head 02_data/file`) and ouput in the folder of the analysis (for instance `03_fst/output`).
+We will work from the `03_day3` directory, and we will save our data within their subfolder (for instance `head 02_data/file`) and output in the directory of the analysis (for instance `03_fst/output`).
 
-## 1. Overall genetic structure & making a LD-pruned VCF file
+## 3-1. Overall genetic structure & making a LD-pruned VCF file
 
 Before considering which variation of the genome is likely shaped by selection, we need to think about what is shaped by neutral processes and the interplay of drift, mutation and gene flow. One of the basic thing to do is thus to assess the genetic structure in our sampled area. It can be done by looking into PCA or STRUCTURE/ADMIXTURE analysis, as well as by looking into pairwise F<sub>ST</sub> between populations. This is something that you did yesterday, first on the two lineages, and then on the 12 populations from Canada.
 
@@ -93,9 +95,9 @@ vcftools --vcf 02_data/canada.vcf --exclude 02_data/canada.prune.out --recode --
 ```
 
 
-## 2. Investigate outliers of differentiation
+## 3-2. Investigate outliers of differentiation
 
-### 2.1 With OutFLANK
+### 3-2.1 With OutFLANK
 [OutFLANK](https://github.com/whitlock/OutFLANK) is an R package that implements the method developed by Whitlock and Lotterhos (https://www.journals.uchicago.edu/doi/10.1086/682949) that uses likelihood on a trimmed distribution of F<sub>ST</sub> values to infer the distribution of F<sub>ST</sub> for neutral markers. This distribution is then used to assign q-values to each locus to detect outliers that may be due to spatially heterogeneous selection.
 
 >Whitlock, M. C., and K. J. Lotterhos. 2015. Reliable detection of loci responsible for local adaptation: Inference of a neutral model through trimming the distribution of FST. The American Naturalist. 186:S24–S36.
@@ -103,23 +105,9 @@ vcftools --vcf 02_data/canada.vcf --exclude 02_data/canada.prune.out --recode --
 This R package has a great vignette, which can be found [here](https://htmlpreview.github.io/?https://github.com/whitlock/OutFLANK/blob/master/inst/doc/OutFLANKAnalysis.html). We will more or less follow it today.
 
 #### Prepare the data
-Open R in the Terminal (type `R` to open and `q()` or `quit()` to escape) and convert our VCF file to the outflank format. You may prefer to run the program on your computer (but be aware that you may have problems with R.4). Feel free to do so but make sure you copy all the `03_day3` folder to your computer to keep using the same paths.
+Open R in the Terminal (type `R` to open and `q()` or `quit()` to escape) and convert our VCF file to the outflank format. You may prefer to run the program on your computer (but be aware that you may have problems with R.4). Feel free to do so but make sure you copy all the `03_day3` directory to your computer to keep using the same paths.
 
-(If you have not done this already) let's start by installing the R packages. Please run each line one by one and answer "yes" if you are asked to install as a personal library:
-```R
-if (!("BiocManager" %in% installed.packages())){install.packages("BiocManager")}
-
-if (!("devtools" %in% installed.packages())){install.packages(devtools)}
-library(devtools)
-
-if (!("qvalue" %in% installed.packages())){BiocManager::install("qvalue")}
-library(qvalue)
-
-if (!("vcfR" %in% installed.packages())){install.packages("vcfR")} 
-
-devtools::install_github("whitlock/OutFLANK")
-```
-Now let's convert our VCF file:
+Let's convert our VCF file:
 ```R
 # load packages
 library(OutFLANK)
@@ -141,7 +129,7 @@ str(chr_pos) # explore the column types
 # use this command to transform this column into numeric
 chr_pos$position <- as.numeric(as.character(chr_pos$position)) 
 
-# we expect that it will be useful for subsequent analysis to have a file with snp id and position, so let's save this data frame as a text file in our folder 02_data/
+# we expect that it will be useful for subsequent analysis to have a file with snp id and position, so let's save this data frame as a text file in our directory 02_data/
 write.table(chr_pos, "02_data/SNP_pos.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
 # extract and format the genotype matrix
@@ -180,7 +168,7 @@ Now we are ready to run OutFlANK. We will follow the best practices recommended 
 - use the FSt uncorrected for population size (options: NoCorr = TRUE) (anyway, here all pop have 20 individuals)
 - Compare the FSt against a distribution based on independant SNPs (pruned for short-distance and long-distance LD)
 We will use the list of pruned SNPs extracted with PLINK earlier.
-Note that other possibilities exists such as using the package bigsnpr
+Note that other possibilities exists such as using the package `bigsnpr`.
 
 #### Run OutFLANK on the LD-pruned SNPs and look at the distribution of F<sub>ST</sub>
 We will use the `prune.in` file produced by PLINK, and a few manipulation to know the position of the SNPs that are in the pruned subset and will be include:
@@ -201,7 +189,7 @@ out_trim <- OutFLANK(my_fst[which(id_snp %in% id_snp_pruned[, 1]), ], NumberOfSa
 str(out_trim)
 
 # have a look at the results
-# the jpeg line allow to output an image in your folder that you can later download to have a look at
+# the jpeg line allow to output an image in your directory that you can later download to have a look at
 jpeg("04_outflank/outflank_prunedSNP_fst.jpeg")
 OutFLANKResultsPlotter(out_trim, withOutliers = TRUE, NoCorr = TRUE, Hmin = 0.1, binwidth = 0.001, Zoom = FALSE, RightZoomFraction = 0.05, titletext = NULL)
 dev.off()
@@ -222,7 +210,7 @@ head(P1)
 
 # we need to add the chromosome/position info for plotting. the left_join function in dplyr is super useful to match differebnt table
 library(dplyr)
-P1_pos <- left_join(P1, chr_pos, by = c("LocusName" = "id_snp"))
+P1_pos <- dplyr::left_join(P1, chr_pos, by = c("LocusName" = "id_snp"))
 
 # We can have a look at the results by exporting the figures
 # we can look at the FSt as a function of heterozygosity to understand which snps have been evaluated, which one appear true or false outliers
@@ -263,7 +251,7 @@ There is accumulating literature suggesting that recombination is a very importa
 
 **Optional:** You may want to re-run the analysis on the SNP subset without chr4/chr5 to get a sense of what that says.
 
-### 2.2 With BayPass
+### 3-2.2 With BayPass
 To look at adaptive differentiation and environmental asssociations, we wil use [BayPass](http://www1.montpellier.inra.fr/CBGP/software/baypass/). The publication is here https://www.genetics.org/content/201/4/1555. 
 >Mathieu Gautier. GENETICS December 1, 2015 vol. 201 no. 4 1555-1579; https://doi.org/10.1534/genetics.115.181453
 
@@ -272,16 +260,16 @@ You can find a good manual [here](http://www1.montpellier.inra.fr/CBGP/software/
 This package is an extension of the software [Bayenv](https://gcbias.org/bayenv/). It may be a little long to run so you will have time to skim the manual for more details. There are different underlying bayesian models, and we will just run the default mode but you may want to explore a bit further in the future.
 
 #### Prepare files
-To save time today, we will use the Toolbox package developped by Yann Dorant. You may be interested in looking at the scripts to understand how this is done.
+To save time today, we will use the Toolbox package developed by Yann Dorant. You may be interested in looking at the scripts to understand how this is done.
 
-This Toolbox embeds various useful scripts in order to fastly convert VCF format to common pop genomics formats (genepop, StAMPP, baypass, bayenv...). If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
+This Toolbox embeds various useful scripts in order to fastly convert VCF format to common pop genomics formats (genepop, StAMPP, BayPass, bayenv...). If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
 
-To download the Toolbox in your current working folder on the server (`03_day3`), use the following command line:
+(*If not done already*) To download the Toolbox in your current working directory on the server (`03_day3`), use the following command line:
 ```bash
 git clone https://gitlab.com/YDorant/Toolbox
 ```
 
-Ok, now we are ready to convert our VCF files to the baypass format. The toolbox has an easy way to do that with a bash script. This bash script requires four arguments:
+Ok, now we are ready to convert our VCF files to the BayPass format. The toolbox has an easy way to do that with a bash script. This bash script requires four arguments:
 * -v VCF file
 * -p population map
 * -f output file format
@@ -297,7 +285,7 @@ ls 05_baypass/
 ```
 
 #### Run BayPass controlled for population structure
-We installed BayPass on the `Share/` folder. However, your working session doesn't know where it has been installed. So we have to add the path to the binaries BayPass to the `PATH` variable. In such, use the following command line: `echo "export PATH=$PATH:~/Share/baypass_2.3/sources/" >> ~/.bashrc`.
+We installed BayPass on the `Share/` directory. However, your working session doesn't know where it has been installed. So we have to add the path to the binaries BayPass to the `PATH` variable. In such, use the following command line: `echo "export PATH=$PATH:~/Share/baypass_2.3/sources/" >> ~/.bashrc`.
 
 After, you have to source the config file where we added this line using this command `source ~/.bashrc`.
 
@@ -329,7 +317,7 @@ If we don't want to control for population structure, we could have run it direc
 #### Set a threshold for the XtX value
 While this runs, we can prepare our subsequent analysis. We need to know above which XtX threhold value we can consider a locus to be an outlier of population differentiation.
 
-To look for that, the authors suggest to simulate a neutral distribution with a small R function, run baypass on the simulated genotypes, and extract the distribution of XtX values. We can then chose a threshold of the 95% quantile, 99% quantile, etc. 
+To look for that, the authors suggest to simulate a neutral distribution with a small R function, run BayPass on the simulated genotypes, and extract the distribution of XtX values. We can then chose a threshold of the 95% quantile, 99% quantile, etc. 
 
 To do so we have simulated genotypes in R using a program provided with BayPass.
 
@@ -415,8 +403,8 @@ done
 
 # Tutorial 2
 
-## 3. Environmental association
-### 3.1 With BayPass (locus by locus)
+## 3-3. Genotype-Environment Associations
+### 3-3.1 With BayPass (locus by locus)
 BayPass can also test for correlations between the genotypic data and environmental or pehnotypic data.
 
 This means that we will no longer look at overall average differentiation between populations, but test whether allele frequencies at each given SNP are correlated with phenotypic or environmental variation. With this approach, we can identify SNPs that are associated with a given phenotype or an enviornmental variable. 
@@ -424,17 +412,16 @@ This means that we will no longer look at overall average differentiation betwee
 To test for environnmental associations with BayPass, we will use the same script as before and just add the '-efile' option to provide a file summarizing environmental variation.
 
 #### Get environmental data and format env file 
-Today we will test for correlations between genotypes and temperature, which I have extracted for each population location from the database MarSPEC (for marine environments). bioOracle is another good option for marine environments, whereas WorldClim is a commonly used database for terrestrial environments. 
+Today we will test for correlations between genotypes and temperature, which we have extracted for each population location from the database MarSPEC (for marine environments). bioOracle is another good option for marine environments, whereas WorldClim is a commonly used database for terrestrial environments. 
 
-Here is an example script to extract environmental variables for each location of interest.
-[extract clim variables](tuto_worldclim.R)
+Here is an example script to extract environmental variables for each location of interest: [extract clim variables](tutorial_worldclim_optional.R)
 
 The format of the environmental data file is one row for each environmenral variable and one column for each population location, without header.
-I have used the file `02_data/info_pop_geo_eco.txt` as input and format it in R to produce the file `05_baypass/env.txt`.
+We have used the file `02_data/info_pop_geo_eco.txt` as input and format it in R to produce the file `05_baypass/env.txt`.
 
 We also need to make sure that our env file is exactly in the same order as the population are in the geno file.
 
-Now we can run baypass with the environment file on both the real dataset and the simulated dataset.
+Now we can run BayPass with the environment file on both the real dataset and the simulated dataset.
 
 Here is the example with the covariate matrix controlling for a possible underlying structure but depending on your system you may want to control or not, or do both to compare (to remove the control by population structure, just remove `-omegafile 05_baypass/prunedsnps.output_mat_omega.out`).
 
@@ -499,7 +486,7 @@ outliers <- bf_pos[bf_pos$BF.dB >= threshold_fdr0.05, ]
 write.table(outliers, "05_baypass/outlier_temp_bp.txt", row.names = FALSE, quote = FALSE, sep = "\t")
 ```
 
-### 3.2 With redundancy analysis (multi-loci)
+### 3-3.2 With Redundancy Analysis (RDA) (multi-loci)
 Until now we have looked for signatures of selection one locus at a time. This is a design that is more likely to point to strong selective sweeps, large-effect loci, and/or large islands of divergence. Yet, most adaptation is expected to be polygenic and genome-scans may not be the best option to tackle this problem. However, RDA considers the whole genetic variance, the geographic variation in the environment and/or phenotypic variation all at once, and for this reason, it represents a better tool than what we've seen so far in the course. 
 
 Again, we can also used the RDA to identify putative candidate.
@@ -509,7 +496,7 @@ Today we will follow a tutorial accompanying this paper https://onlinelibrary.wi
 
 Which has a super nice vignette that you can check here https://popgen.nescent.org/2018-03-27_RDA_GEA.html. 
 
-Our tutorial will be pretty simple compared to this one because we're going test for associations with only one environmental variable, that is temperature. We encourage you to explore the Forester's tutorial in detail as it provides more details. Also, I would recommend two more papers on RDA and their application in real studies. The first is a follow-up from Forester's et al. (2018), which is also accompanied by a tutorial (for more advanced users I would say)
+Our tutorial will be pretty simple compared to this one because we're going test for associations with only one environmental variable, that is temperature. We encourage you to explore the Forester's tutorial in detail as it provides more details. Also, we would recommend two more papers on RDA and their application in real studies. The first is a follow-up from Forester's et al. (2018), which is also accompanied by a tutorial (for more advanced users we would say)
 >Capblancq, T. and Forester, B.R., 2021. Redundancy analysis: A Swiss Army Knife for landscape genomics. Methods in Ecology and Evolution, 12(12), pp.2298-2309.
 
 With tutorial stored here https://github.com/Capblancq/RDA-landscape-genomics
@@ -554,7 +541,7 @@ The code to run a RDA is quite simple:
 # load package
 library(vegan)
 # run rda
-temp.rda <- rda(gen.imp ~ info$temperature, scale = TRUE)
+temp.rda <- library::rda(gen.imp ~ info$temperature, scale = TRUE)
 temp.rda
 ```
 Since we have only one variable, only RDA1 (the 1st axis) is meaningful.
@@ -588,7 +575,7 @@ RDA2 is meaningless and samples are dispersed along RDA1 which represent tempera
 
 We can now use the loadings of the SNPs in  the ordination space to determine which SNPs are candidates for local adaptation. The SNP loadings are stored as "species" in the RDA object. We’ll extract the SNP loadings from RDA1 (choices is for which RDA axis we want) and extract the ones that are in the tail of this distribution. The most frequently used cut-off is 3SD (standard deviation) but you can choose to be more stringent or more inclusive depending on your objectives.
 
-Here we chose a very low cut-off of 2, which will likely include false positives but we want to have enough outliers to be able to perform gene ontology enrichment analyses tomorrow and to look at the overlap with baypass
+Here we chose a very low cut-off of 2, which will likely include false positives but we want to have enough outliers to be able to perform gene ontology enrichment analyses tomorrow and to look at the overlap with BayPass
 - 2 (p=0.05)
 - 2.25 (p=0.025)
 - 2.5 (p=0.01)
@@ -599,7 +586,6 @@ Here we chose a very low cut-off of 2, which will likely include false positives
 
 
 ```R
-# ??
 load.temp.rda <- scores(temp.rda, choices = c(1), display = "species") 
 
 # load info about snps
@@ -646,14 +632,14 @@ ggplot(load.temp.rda.pos, aes(x = position, y = RDA1, colour = chromosome)) +
 
 ![loading_temp_manhattanplot](07_img_readme/loading_temp_manhattanplot.jpeg)
 
-As with baypass, we have very few outliers associated with temperature. Yet, their signal is quite strong so they are likely worth exploring a little more.
+As with BayPass, we have very few outliers associated with temperature. Yet, their signal is quite strong so they are likely worth exploring a little more.
 
 In our system in which gene flow is super high and geographic structure very low, it is not recommended to control the RDA by geography or population structure. Yet, as a proof of principle, you can explore how to do it in this complementary tutorial.
 
 [Complementary RDA tutorial](00_documents/RDA.md)
 
 ### Identify outliers detected by two different methods
-It is often recommended to keep only outliers (or SNPs with strong GEA) detected by more than one method to avoid false positive. This will nevertheless also reduce the power of the analysis... a matter of choice? Here we will run a few R command to keep the intersection of our baypass and RDA outliers. It is worth noting that since RDA and baypass works differently, it may not be surprising to have a limited overlap.
+It is often recommended to keep only outliers (or SNPs with strong GEA) detected by more than one method to avoid false positive. This will nevertheless also reduce the power of the analysis... a matter of choice? Here we will run a few R command to keep the intersection of our BayPass and RDA outliers. It is worth noting that since RDA and BayPass works differently, it may not be surprising to have a limited overlap.
 
 You can run that in Rstudio on your computer if you copy the outliers files into their respective folders. We will also make a Venn-diagram:
 
@@ -692,5 +678,4 @@ library(ggVennDiagram)
 ggVennDiagram(list(rda = 1:nRDA, BP = (nRDA + 1 - nboth):(nRDA - nboth + nBP)))
 
 ```
-
 ![venn](07_img_readme/venn.png)

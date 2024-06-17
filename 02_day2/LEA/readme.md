@@ -1,1 +1,1 @@
-This is where we run the LEA structure analysis
+This is where we run the LEA structure analysis.

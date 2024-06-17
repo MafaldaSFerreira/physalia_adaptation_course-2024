@@ -1,19 +1,20 @@
-# Exploring differentiation heterogeneity across the genome and putative chromosomal rearrangements on Chr 4 <!-- omit from toc -->
+# Day 4. Tutorial on haploblocks <!-- omit from toc -->
 
-**Table of contents**
-- [Step 1. Local PCA along the genome to detect non-recombining haploblocks](#step-1-local-pca-along-the-genome-to-detect-non-recombining-haploblocks)
+## Table of contents <!-- omit from toc -->
+- [4-1. Exploring differentiation heterogeneity across the genome and putative chromosomal rearrangements on Chr 4](#4-1-exploring-differentiation-heterogeneity-across-the-genome-and-putative-chromosomal-rearrangements-on-chr-4)
+  - [Local PCA along the genome to detect non-recombining haploblocks](#local-pca-along-the-genome-to-detect-non-recombining-haploblocks)
     - [Prepare files](#prepare-files)
     - [Run lostruct (on the server)](#run-lostruct-on-the-server)
-    - [Visualising the local PCA outputs (on your computer in Rstudio)](#visualising-the-local-pca-outputs-on-your-computer-in-rstudio)
-    - [Using MDS](#using-the-mds)
-    - [A note about running R into a terminal or on a server](#a-note-about-running-r-into-a-terminal-or-on-a-server)
-- [Step. 2 Explore the putative haploblock](#step-2-explore-the-putative-haploblock)
+    - [Visualizing the local PCA outputs (on your computer in Rstudio)](#visualizing-the-local-pca-outputs-on-your-computer-in-rstudio)
+  - [Using Multidimensional Scaling (MDS)](#using-multidimensional-scaling-mds)
+  - [A note about running R into a terminal or on a server](#a-note-about-running-r-into-a-terminal-or-on-a-server)
+- [4-+2. Explore the putative haploblock](#2-explore-the-putative-haploblock)
   - [Genotype the individuals for the haploblocks](#genotype-the-individuals-for-the-haploblocks)
-  - [Study linkage disequilibrium](#study-linkage-disequilibrium)
-    - [On the server: calculate LD with Plink](#on-the-server-calculate-ld-with-plink)
-    - [On your computer: plotting LD](#on-your-computer-plotting-ld)
-  - [Studying divergence with F<sub>ST</sub> (optional)](#studying-divergence-with-fst-optional)
-  - [Studying heterozygosity with the % of heterozygotes in each genotype group (optional)](#studying-heterozygosity-with-the--of-heterozygotes-in-each-group-optional)
+  - [Study linkage disequilibrium (LD) in the haplobock region](#study-linkage-disequilibrium-ld-in-the-haplobock-region)
+    - [On the server: Calculate LD with PLINK](#on-the-server-calculate-ld-with-plink)
+    - [On your computer: Plotting LD](#on-your-computer-plotting-ld)
+  - [Studying divergence with FST (optional)](#studying-divergence-with-fst-optional)
+  - [Studying heterozygosity with the % of heterozygotes in each genotype group (optional)](#studying-heterozygosity-with-the--of-heterozygotes-in-each-genotype-group-optional)
   - [About haploblocks](#about-haploblocks)
 
 
@@ -26,12 +27,14 @@ cd 04_day4/01_haploblocks
 ```
 We will run all commands from this folder.
 
-## Step 1. Local PCA along the genome to detect non-recombining haploblocks
+## 4-1. Exploring differentiation heterogeneity across the genome and putative chromosomal rearrangements on Chr 4 
+
+### Local PCA along the genome to detect non-recombining haploblocks
 As you saw on day 2, the PCA performed on the 240 samples from the 12 populations from Canada displays a very unexpected pattern. The loadings indicate that some portions of the genome are overwhelmingly driving population structure, making us suspect there may be sex-linked markers and/or chromosomal rearrangements.
 
 To get a better sense of what's going on, we will be running a PCA again, but along the genome using windows of X SNPs. For this we will use the R package [lostruct]( https://github.com/petrelharp/local_pca), presented in this [publication](https://www.genetics.org/content/211/1/289).
 
-####  Prepare files
+#### Prepare files
 We will skip the preparation of the file and the 1st steps of lostruct to read and prepare the windows because R does not communicate with bcftools on the AWS and we want to save you time. So keep in mind that there are preparative steps if you want to re-do the analysis on your dataset. 
 [Link to preliminary steps in_lostruct](https://github.com/clairemerot/physalia_adaptation_course/blob/master/04_day4/01_haploblocks/step0_filepreparation.md)
 
@@ -41,16 +44,9 @@ Then, lostruct runs the PCAs on each window. Here we choose to retain the first 
 
 The output consists of a matrix in which each row gives the first k eigenvalues and k eigenvectors for each window. This gives you a matrix with 483 columns (3 columns of info, 240 columns with PC1 score for each individual, and 240 column with PC2 score for each individual). The matrix consists of as many rows as windows (1016 with windows of 100 SNPs). I added 3 columns of information about the window position. You can have a look at it with `less -S 00_localPCA/pca_matrix.txt`, escape less by pressing "q".
 
-####  Run lostruct (on the server)
-We will run the final steps of the lostruct approach. you can do it either on the terminal (start R) or in RStudio on your computer
-
-Installing the libraries will write a lot of lines, don't worry it means it is going well. Answer "y" if it asks you if you want a personal library, and 1 if you are ask to pick a cran mirror. Please run the lines one by one.
-
+#### Run lostruct (on the server)
+We will run the final steps of the lostruct approach. You can do it either on the terminal (start R) or in RStudio on your computer:
 ```R
-# install libraries
-install.packages("data.table")
-devtools::install_github("petrelharp/local_pca/lostruct")
-
 # load libraries
 library(data.table)
 library(lostruct)
@@ -65,7 +61,7 @@ pcs <- as.matrix(pca_matrix[, 4:dim(pca_matrix)[2]])
 
 The lostruct approach is based on the computation of pairwise distances between windows and their visualization with a MDS (multidimensional scaling). Our goal is to identify groups of windows that display similar PCA patterns. This is done with the following functions (we use 2 PC per window as above, and will look at the 1st 10 axes of the MDS)
 ```R
-pcdist <- pc_dist(pcs,npc = 2)
+pcdist <- pc_dist(pcs, npc = 2)
 mds_axe <- cmdscale(pcdist, k = 10)
 head(mds_axe)
 
@@ -75,12 +71,13 @@ write.table(mds_matrix, "00_localPCA/mds_matrix.txt", sep = "\t", row.names = FA
 ```
 Since this will take some time, we can let it run and explore some of the local PCAs on your local computer with Rstudio. Let's download `pca_matrix.txt` locally and play in Rstudio to look at some of those local PCAs.
 
-#### Visualising the local PCA outputs (on your computer in Rstudio)
+#### Visualizing the local PCA outputs (on your computer in Rstudio)
 Back on our local computer in R studio, we will look at all those local PCAs.
 Set your working directory as `04_day4/01_haploblocks`, load required libraries (ggplot2) and the matrix of PCAs
 
 ```R
 setwd("04_day4/01_haploblocks")
+# load package
 library(ggplot2)
 
 # load pca matrix
@@ -159,7 +156,7 @@ What do you see?  Which windows correlate with PC1? What do you think?
 
 Now you can have a look at correlation between local PC1s and the global PC2...
 
-####  Using Multidimensional Scaling (MDS)
+### Using Multidimensional Scaling (MDS)
 In the previous exercise, we knew before hand that there was a probably a abnormal signal on PC1 and PC2 of the local PCA. However, please keep in mind that, even if on the global PCA no region is driving a specific clustering, there may still be, on some chromosome, or some regions, similar clustering of individuals due to population structure, chromosomal rearragements, sex, non-recombining haploblocks, etc. Exploring the MDS is a way to detect such heterogeneity in the genome.
 
 Let's load the MDS and plot the first four axes:
@@ -209,7 +206,7 @@ This is the output for MDS2:
 To follow-up, you can try to find approximately the breakpoints of those areas that appear outliers (Hint: find the windows with high MDS scores).
 We can locate them approximately at 4.8MB to 16.6MB on chromosome 4 and the full chromosome 5.
 
-#### A note about running R into a terminal or on a server
+### A note about running R into a terminal or on a server
 Instead of running R frontally, as we did at the beginning for lostruct, we could have written an R script and run it with the following command:
 ```bash
 Rscript my_fancy_script.R "option1" "option2"
@@ -221,7 +218,7 @@ option1 <- argv[1]
 option2 <- argv[2]
 ```
 
-## Step 2. Explore the putative haploblock
+## 2. Explore the putative haploblock
 
 ### Genotype the individuals for the haploblocks
 Thanks to our local PCA exploration on day 2, we know that there are non-recombining haploblocks, which may be an inversion on chromosome 4.
@@ -236,7 +233,7 @@ If you are interested in understanding how to perform the genotyping, you can ha
 
 ### Study linkage disequilibrium (LD) in the haplobock region
 
-#### On the server: calculate LD with PLINK
+#### On the server: Calculate LD with PLINK
 To calculate LD between alls pairs of SNPs using the data for all individuals in our dataset we will use [PLINK](https://www.cog-genomics.org/plink/).
 We will remove SNPs at low frequency as they are not informative (>5% of frequency - we could have filter up to 5% or 10% with whole genome data). 
 We will focus on chromosome 4 but feel free to try other chromosomes.
@@ -283,10 +280,11 @@ plink --bed 03_ld/AA_maf0.05_chr4.bed \
 --out 03_ld/AA_maf0.05_chr4
 
 head 03_ld/AA_maf0.05_chr4.ld
+
 ```
 
 
-#### On your computer: plotting LD
+#### On your computer: Plotting LD
 
 Please download the two files `.ld` to your local computer (in the `03_ld` folder).
 We will use R to visualise the results.
@@ -320,8 +318,8 @@ ggplot(chr4.ld, aes(x = BP_A, y = BP_B, col = R2)) + theme_classic() +
 
 Do you observe the particular LD pattern of an inversion (or a non-recombining block?)? When do you observe the signal: when considering all individuals together, or when considering LD for AA individuals only? Why? Is this pattern also observed in the BB group?
 
-### Studying divergence with F<sub>ST</sub> (optional)
-We may be interested in calculating several statistics for each haplogroup (diversity, divergence, etc). For instance we can calculate F<sub>ST</sub> between our groups, as you learnt to do on day 2 with VCFtools, both as an overall F<sub>ST</sub> value and in sliding-windows along the genome.
+### Studying differentiation with F<sub>ST</sub> (optional)
+We may be interested in calculating several statistics for each haplogroup (diversity, differentiation, etc). For instance we can calculate F<sub>ST</sub> between our groups, as you learnt to do on day 2 with VCFtools, both as an overall F<sub>ST</sub> value and in sliding-windows along the genome.
 Note that here this is not ideal since it is better to have balanced sample size (and our group BB is pretty small).
 
 If you are interested in following this extra tutorial, you will find all details here:
@@ -353,7 +351,6 @@ These are the results:
 
 As you observed on the Manhattan plots, there is a lot of heterogeneity between SNPs. Perhaps it might be worth looking at results in sliding-windows?
 Our case is not ideal because SNPs are sparse (RAD-seq) but with whole-genome data you would have no choice but to visualize results by windows.
-
 
 We can also visualize them with violin-plots
 ![Hobs_violin](06_images/Hobs_violin.png)

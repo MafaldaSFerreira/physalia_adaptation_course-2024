@@ -1,1 +1,1 @@
-where fst output will be
+Where FST output will be located.
