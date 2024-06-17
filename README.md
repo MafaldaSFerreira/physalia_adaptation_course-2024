@@ -22,8 +22,8 @@ All tutorials (except for day 1) can be completed using the files provided in th
   - [Day 4: Accounting for Structural Variants](#day-4-accounting-for-structural-variants)
   - [Day 5: Functional approaches](#day-5-functional-approaches)
   - [Additional resources](#additional-resources)
-    - [Cheatsheet of bash commands](#cheatsheet-of-bash-commands)
-    - [Cheatsheet of R commands](#cheatsheet-of-r-commands)
+    - [Cheat sheet of bash commands](#cheat-sheet-of-bash-commands)
+    - [Cheat sheet of R commands](#cheat-sheet-of-r-commands)
 
 
 ## Before the course
@@ -129,10 +129,10 @@ This tutorial show how to filter RAD loci to exclude duplicated ones (keep a rel
 
 ### Additional resources
 
-#### Cheatsheet of bash commands
+#### Cheat sheet of bash commands
 > TO UPDATE! Blurry image
 ![cheatsheet](images/bash_cheatsheet.png)
 
-#### Cheatsheet of R commands
+#### Cheat sheet of R commands
 
 > TO BE ADDED

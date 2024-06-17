@@ -284,7 +284,7 @@ sudo make install
 The pipeline is now ready to run.
 
 ## tabix
->Perhaps no need to install it as it might come with bcftools?
+>Perhaps no need to install it as it might come with bcftools
 
 ## VCFtools
 Go to this [page](https://vcftools.github.io/downloads.html) and download the TAR version of the file. Then execute:

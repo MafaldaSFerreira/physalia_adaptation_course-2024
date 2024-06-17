@@ -1,10 +1,4 @@
-# Software required to be installed by students on their local computer <!-- omit from toc -->
-
-## Table of contents <!-- omit from toc -->
-- [FileZilla client](#filezilla-client)
-- [R](#r)
-- [RStudio](#rstudio)
-- [R packages](#r-packages)
+# Software required to be installed by students on their local computer
 
 ## FileZilla client
 Follow the instructions given [here](https://filezilla-project.org) for the operating system on your machine.

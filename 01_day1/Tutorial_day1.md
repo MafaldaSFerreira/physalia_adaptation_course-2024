@@ -27,21 +27,20 @@ mkdir scripts
 # go to the new directory
 cd scripts
 # copy all the files (*) within the 00_documents/ directory (from the Share directory) into the directory you are currently in
-cp ~/Share/physalia_adaptation_course/00_documents/* .
+cp -r ~/Share/physalia_adaptation_course/00_documents/* .
 # copy the 01_day1/01_scripts/ directory and its content (-r to refer to directory) into the directory you are currently in
 cp -r ~/Share/physalia_adaptation_course/01_day1/01_scripts .
 
 ```
 
-Use `ls` to list (explore) the files available in the current directory. Next, explore some files using the `less` command. Note that when using `less`, you can scroll-down by pressing the Space bar on your keyboard, and exit the screen with `q`:
+Use `ls` to list (explore) the files available in the current directory. Next, explore some files using the `less` command. Note that when using `less`, you can scroll-down by pressing the Space bar on your keyboard, and exit `less` with `q`:
 ```bash
 # explore the content of the current directory
 ls
-# explore file in the current directory
+# explore a file in the current directory
 less popmap_2lin_day1.txt
-# explore file using a relative path
+# explore a file using a relative path
 less 01_scripts/stacks_gstacks_2lin.sh
-
 ```
 Another option is to go to the target directory using `cd targetFolder`, and then use `less targetFile` to display the file content. But, as you may have noticed, relative paths can save us some time!
 
@@ -101,11 +100,11 @@ The snippet above shows 3 reads. Each read consists of 4 lines:
 
 Knowing this, we can calculate the number of reads in a file by counting the number of lines using `wc -l` and dividing by 4:
 ```bash
-zcat -f  ~/Share/physalia_adaptation_course/01_day1/03_raw_reads/A_01.fq.gz | wc -l 
+zcat -f  ~/Share/physalia_adaptation_course/01_day1/03_raw_reads/BEL-B_12.fq.gz | wc -l 
 ```
 Or using the command below, directly on compressed fastq files (`*.fq.gz`): 
 ```bash
-zcat -f  ~/Share/physalia_adaptation_course/01_day1/03_raw_reads/A_01.fq.gz | sed -n '2~4p' | wc -l
+zcat -f  ~/Share/physalia_adaptation_course/01_day1/03_raw_reads/BEL-B_12.fq.gz | sed -n '2~4p' | wc -l
 ```
 
 When we have paired-end reads, they are generally stored in two separate files and are paired by position: the first read in `read1.fastq` is paired with the first read in `read2.fastq`, the second read in `read1.fastq` is paired with the second read in `read2.fastq`, and so on. One way to check if your files are intact is to ensure that the two read files have the same amount of lines/reads.
@@ -127,7 +126,7 @@ ln -s ~/Share/bamfiles/*.bam .
 #### SAM/BAM
 The alignment file contains much more information than the raw data `*.fastq` files. In addition to all the information contained in the `*.fastq` files, we now have information of the quality of the alignment and the position of where those reads mapped on the genome. Although we produce `*.sam` files with the alignment, we quickly convert them to `*.bam`, which is their binary format. These files are not readable directly but you can use these command to visualize them:
 ```bash
-samtools view -h A_01.bam | less 
+samtools view -h BEL-B_12.bam | less 
 ```
 With the pipe sign `|`, we pass the output of the first command into the second command.
 The first few lines starting with `@` correspond to the header. If you have a lot of scaffolds in your reference genome, the header could be very long. If you want to see the first few alignments, remove `-h` from the command above.
@@ -258,7 +257,6 @@ For each output type, open the corresponding file on the server, and take your t
 Here you've executed the pipeline on 80 individuals. Before we wrap up today, you need to create the same input files for the full dataset (280 individuals listed in popmap_all_day1.txt) and the Canada dataset (240 individuals listed in `popmap_canada_day1.txt`). 
 
 You should have already run the script `~/scripts/gstacks_stacks.sh`. Now, run `populations` on the new catalog twice, once for all individuals, and once for just the Canadian samples. 
->What do you need to modify here?
 
 ```bash
 cd ~/stacks
@@ -271,6 +269,8 @@ populations -P ~/stacks/gstacks_2lin/ -M ~/scripts/00_documents/popmap_2lin_day1
 Make sure you print these outputs in each of these two directories `populations_all_random` and `populations_canada_random`.
 
 If you are struggling with this last step, have a look at the solution [here](populations_script.md).
+
+**IMPORTANT: Do not use the output files from today during the rest of the course. We will use other inputs.** 
 
 ### Variant calling from whole genome re-sequencing data
 First, let's set up new folders for these analyses:
@@ -334,4 +334,5 @@ Finally, prepare the data for downstream analyses by recoding the genotypes in [
 vcftools --vcf capelin_wgs_filtered.vcf --012 --out capelin_wgs_filtered
 
 ```
-Finally, download the resulting files to your local computer.
+
+**IMPORTANT: Do not use the output files from today during the rest of the course. We will use other inputs.** 
