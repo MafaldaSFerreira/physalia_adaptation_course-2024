@@ -122,10 +122,10 @@ This tutorial show how to filter RAD loci to exclude duplicated ones (keep a rel
 
 ### Additional resources
 
-#### Cheatsheet of bash commands
+#### Cheat sheet of bash commands
 > TO UPDATE! Blurry image
 ![cheatsheet](images/bash_cheatsheet.png)
 
-#### Cheatsheet of R commands
+#### Cheat sheet of R commands
 
 > TO BE ADDED
