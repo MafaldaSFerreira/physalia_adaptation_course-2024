@@ -8,7 +8,7 @@ genome_mallotus_dummy.genome : capelin
 ```
 if you do 
 ```bash
-less ~/Share/ressources/snpEff/snpEff.config
+less ~/Share/resources/snpEff/snpEff.config
 ```
 Add the transcriptome called "genes.gff" into a data folder. and the genome as a fasta (.fa and .genome) in a genomes folder.
 ```bash
@@ -23,6 +23,6 @@ java -jar snpEff.jar build -gff3 -v genome_mallotus_dummy
 ```
 If you want to, you can look at the database by doing:
 ```bash
-java -jar ~/Share/ressources/snpEff/snpEff.jar dump genome_mallotus_dummy | less
+java -jar ~/Share/resources/snpEff/snpEff.jar dump genome_mallotus_dummy | less
 ```
 To exit `less` simply press `q`.

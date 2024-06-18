@@ -222,7 +222,7 @@ cd ~/stacks
 
 mkdir populations_2lin_random
 
-populations -P ~/stacks/gstacks_2lin/ -M ~/scripts/00_documents/popmap_2lin_day1.txt -O ~/stacks/populations_2lin_random -t 4 -p 2 -r 0.8 --fstats --vcf --genepop --structure --write-random-snp
+populations -P ~/stacks/gstacks_2lin/ -M ~/scripts/popmap_2lin_day1.txt -O ~/stacks/populations_2lin_random -t 4 -p 2 -r 0.8 --fstats --vcf --genepop --structure --write-random-snp
 
 ```
 
@@ -254,7 +254,7 @@ cd populations_2lin_random
 vcftools --vcf populations.snps.vcf --missing-indv --out missing
 sort -rk5,5 missing.imiss | less # with this you will visualize individuals by % of missing data, from the highest to the lowest
 ```
-In this case the % of missing data is below 5%, so we don't need to discard any individual.
+Ideally, % of missing data should be below 5%. 
 
 >Congratulations! You have all the input files ready for downstream analyses (plus a bunch of statistics) for the reduced dataset.
 
@@ -270,11 +270,10 @@ You should have already run the script `~/scripts/gstacks_stacks.sh`. Now, run `
 cd ~/stacks
 mkdir populations_2lin_random
 
-populations -P ~/stacks/gstacks_2lin/ -M ~/scripts/00_documents/popmap_2lin_day1.txt -O ~/stacks/populations_2lin_random -t 4 -p 2 -r 0.8 --fstats --vcf --genepop --structure --write-random-snp
-
+populations -P ~/stacks/gstacks_2lin/ -M ~/scripts/popmap_2lin_day1.txt -O ~/stacks/populations_2lin_random -t 4 -p 2 -r 0.8 --fstats --vcf --genepop --structure --write-random-snp
 ```
 
-Make sure you print these outputs in each of these two directories `populations_all_random` and `populations_canada_random`.
+Make sure you print these outputs in each of these two directories `populations_all_random` and `populations_canada_random`. You might have to run the commands using `nohup`.
 
 If you are struggling with this last step, have a look at the solution [here](populations_script.md).
 
@@ -301,7 +300,7 @@ ls *.bam > bams_list.txt # create a list of bam files
 
 Call variants using [bcftools](https://samtools.github.io/bcftools/):
 ```bash
-bcftools mpileup -Ou -f ~/Share/ressources/genome_mallotus_dummy.fasta -b bams_list.txt -r Chr1 -q 5 -I -a AD,DP,SP,ADF,ADR -d 200 | bcftools call - -mv -Ov > snps_bcftools/capelin_wgs_unfiltered.vcf
+bcftools mpileup -Ou -f ~/Share/resources/genome_mallotus_dummy.fasta -b bams_list.txt -r Chr1 -q 5 -I -a AD,DP,SP,ADF,ADR -d 200 | bcftools call - -mv -Ov > snps_bcftools/capelin_wgs_unfiltered.vcf
 
 ```
 Variant filtering is done in two steps. First we use `bcftools filter` to filter SNPs based on mapping quality. Then, we apply a series of filters using [VCFtools](https://vcftools.github.io/index.html). Note that we are calling variants for chromosome 1 only to save time:

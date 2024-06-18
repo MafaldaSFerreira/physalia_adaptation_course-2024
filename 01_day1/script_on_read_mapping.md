@@ -19,7 +19,7 @@ ALIGNEDFOLDER="04_aligned_files"
 NCPU=$1
 
 ```
-First, it uses a for loop in bash to loop through the list of fastq files to map to the reference genome:
+First, it uses a for loop in bash to loop through the list of `.fastq` files to map to the reference genome:
 ```bash
 for file in $(ls -1 "$DATAFOLDER"/*.fq.gz)
 do

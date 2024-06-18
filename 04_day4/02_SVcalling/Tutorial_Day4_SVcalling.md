@@ -43,7 +43,7 @@ mkdir svs_delly
 ln -s /home/ubuntu/Share/WGS_bam/* .
 
 # run delly to call SVs on all samples combined
-delly call -g ~/Share/ressources/genome_mallotus_dummy.fasta -o svs_delly/capelin_sv.bcf BELB9.bam BELD3.bam BLA13.bam BLA15.bam BLA16.bam BLA17.bam BLA22.bam BLA24.bam BSO17.bam BSO23.bam BSO28.bam POR19.bam 
+delly call -g ~/Share/resources/genome_mallotus_dummy.fasta -o svs_delly/capelin_sv.bcf BELB9.bam BELD3.bam BLA13.bam BLA15.bam BLA16.bam BLA17.bam BLA22.bam BLA24.bam BSO17.bam BSO23.bam BSO28.bam POR19.bam 
 
 # convert file from .bcf to .vcf
 cd svs_delly

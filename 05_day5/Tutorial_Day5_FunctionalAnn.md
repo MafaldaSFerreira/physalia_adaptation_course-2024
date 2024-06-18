@@ -29,8 +29,8 @@ Now you should have everything we need for today. You can explore the different 
 
 You will also find the list of all SNPs present in the VCF. You can look at each file with the command `head 03_outliers/SNP_pos.txt` for instance.
 
-The annotated transcriptome (which is generally in `.gff` format) is located at the following path `~/Share/ressources/`. A copy of the `.gff` transcriptome is inside the `02_data` folder.
-You don't need to copy them as we have prepared simplified files (in R, simply selecting the relevant column) when needed. You may want to have a look to get a sense of what it looks like using `less ~/Share/ressources/genome_mallotus_dummy.gff3`. Press `q` to exit the less visualization. 
+The annotated transcriptome (which is generally in `.gff` format) is located at the following path `~/Share/resources/`. A copy of the `.gff` transcriptome is inside the `02_data` folder.
+You don't need to copy them as we have prepared simplified files (in R, simply selecting the relevant column) when needed. You may want to have a look to get a sense of what it looks like using `less ~/Share/resources/genome_mallotus_dummy.gff3`. Press `q` to exit the less visualization. 
 
 ## 5-1. SNP annotation with SnpEff 
 
@@ -46,14 +46,14 @@ If you want to re-create it, the `.gff` is inside the `02_data` while the refere
 If you want to, you can look at the database by doing:
 
 ```bash
-java -jar ~/Share/ressources/snpEff/snpEff.jar dump genome_mallotus_dummy | less
+java -jar ~/Share/resources/snpEff/snpEff.jar dump genome_mallotus_dummy | less
 ```
 It may take a minute to open. To exit less, press `q`.
 
 ### Annotate the VCF file 
 Now we can annotate the VCF file. We use a raw VCF file in the folder `02_data` and will write the output into the folder `04_snpEff` in which we will have all subsequent files related to the SnpEff analyses.
 ```bash
-java -Xmx4g -jar ~/Share/ressources/snpEff/snpEff.jar genome_mallotus_dummy 02_data/canada.vcf > 04_snpEff/canada_annotated.vcf
+java -Xmx4g -jar ~/Share/resources/snpEff/snpEff.jar genome_mallotus_dummy 02_data/canada.vcf > 04_snpEff/canada_annotated.vcf
 ```
 Let's look at the new VCF `less -S 04_snpEff/canada_annotated.vcf`. As you can see, it keeps the VCF format with its specific header, and adds annotation information for each SNP. However, this information is not easy to import into R as it is now.
 To continue the analyses, we will use a few bash commands and awk to split the information by the symbol `|` and produce a new tab delimited table.

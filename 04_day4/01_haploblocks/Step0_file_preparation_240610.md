@@ -1,7 +1,7 @@
 ## Step 1 Sliding PCA : skipped step of preparing files
 
 ####  prepare the vcf (in the terminal) [do not run]
-First you need to process the unfiltered vcf for the 12 NWA populations. We will here use the vcf before selecting one random SNP per loci (i. e. a vcf with all SNPs even if they are linked) because we need as much information as possible when we are looking for LD. I have placed a version of the full vcf in Share/ressources.
+First you need to process the unfiltered vcf for the 12 NWA populations. We will here use the vcf before selecting one random SNP per loci (i. e. a vcf with all SNPs even if they are linked) because we need as much information as possible when we are looking for LD. I have placed a version of the full vcf in `Share/resources`.
 We will use several programms to convert the vcf into a bcf, sort it and index it.
 The package lostruct can also take a vcf but it is heavy to load the whole file. Instead, they made function that is able to cut the vcf window by window to avoid overloading the memory (but this requires a sorted, indexed bcf)
 
