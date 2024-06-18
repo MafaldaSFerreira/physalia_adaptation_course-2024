@@ -50,17 +50,25 @@ head popmap_2lin_day1.txt
 ```
 The `head` command prints the first 10 lines by default. You can specify the number of lines you want to print with `-n` followed by the number of lines, e.g. `-n 25`. Same for `tail`, which shows the last 10 lines of a file.
 
+Make a copy of a file and assign a different name:
+```bash
+cp popmap_2lin_day1.txt test_popmap.txt
+```
 To edit files, we will use the text editor called `nano`:
 ```bash
-nano popmap_2lin_day1.txt
+nano test_popmap.txt
 ``` 
-You can navigate through the lines of the file using the arrows on your keyboard. At the bottom of your screen there are shortcuts for different commands. For example, to modify the file and save it with a different name, write something in the first line, press the `Ctlr` and `x` at the same time (which is equivalent to `Ctlr + x`), and change the name of the file into `test_nano.txt`. Hit `Enter` and the file will be saved.
+To navigate through the lines of the file use the arrows on your keyboard. At the bottom of the screen there are shortcuts for different actions. 
 
-Now, let's delete/remove this file with `rm`:
+For example, to modify the file and save it with a different name, write something in the first line, press the `Ctlr` and `o` keys (equivalent to `Ctlr + o`), type the new file name (`test_nano.txt`), press `Enter` and `y` to save the file under a different name. To exit nano, press `Ctlr + x`. 
+
+If you want to make changes to a file and overwrite it, then press `Ctlr + x` and `y` (or `n` if not).
+
+Now, let's delete/remove these files using `rm` and the wildcard symbol `*` which match against zero or more characters in a file (or directory) name:
 ```bash
-rm test_nano.txt
+rm test_*.txt
 ```
-**WARNING! The command `rm` removes files and folders for good, and they can't be undo. So please keep that in mind!**
+**WARNING! The command `rm` removes files and folders for good, and this cannot be undone. So please keep that in mind!**
 
 
 ## 1-2. From raw sequences to mapped data
