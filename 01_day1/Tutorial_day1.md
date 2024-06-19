@@ -117,6 +117,27 @@ zcat -f  ~/Share/physalia_adaptation_course/01_day1/03_raw_reads/BEL-B_12.fq.gz 
 
 When we have paired-end reads, they are generally stored in two separate files and are paired by position: the first read in `read1.fastq` is paired with the first read in `read2.fastq`, the second read in `read1.fastq` is paired with the second read in `read2.fastq`, and so on. One way to check if your files are intact is to ensure that the two read files have the same amount of lines/reads.
 
+### Conda environment
+
+All the software that you need to run the exercises in our course is installed in a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html). With conda, you can create separate working environments containing software and package versions that you need for a specific analysis. 
+
+To load the environment we use in this course run the following line:
+
+```
+conda activate adaptg
+```
+
+You will see that your promt now shows the following:
+
+```
+
+(adaptg) ubuntu@ip-172-31-16-191::
+```
+
+This means the environment is activate and you can run all software just by typing the name in the command line.
+
+```If you try to run a software and it does not run, remember to check if your conda environment is active.```
+
 ### Mapping sequence reads to a reference genome
 As we are analyzing a large read dataset that could take several hours to align against a reference genome, we did this step for you. You can find a step-by-step breakdown of the script here:
 
@@ -134,6 +155,10 @@ ln -s ~/Share/bamfiles/*.bam .
 #### SAM/BAM
 The alignment file contains much more information than the raw data `*.fastq` files. In addition to all the information contained in the `*.fastq` files, we now have information of the quality of the alignment and the position of where those reads mapped on the genome. Although we produce `*.sam` files with the alignment, we quickly convert them to `*.bam`, which is their binary format. These files are not readable directly but you can use these command to visualize them:
 ```bash
+# activate the conda environment
+conda activate adaptg
+
+# run samtools
 samtools view -h BEL-B_12.bam | less 
 ```
 With the pipe sign `|`, we pass the output of the first command into the second command.
@@ -166,14 +191,25 @@ Although the modules `gstacks` and `populations` can be run on one go with the `
 
 Please copy the scripts inside your directory and make executable the one we are interested in:
 ```bash
-cd # come back to your home
-cd scripts # get inside your scripts
+# activate the conda environment, if it is not yet
+conda activate adaptg
+
+# come back to your home
+cd 
+
+# get inside your scripts
+cd scripts 
+
 # now copy files inside your 01_scripts directory. (replace the one you may have copy earlier as I edited them)
 cp ~/Share/physalia_adaptation_course/01_day1/01_scripts/*.sh 01_scripts/
+
 # make the file executable
-chmod +x ~/scripts/01_scripts/stacks_gstacks.sh # notice that the script name has turned green?
+# notice that the script name has turned green?
+chmod +x ~/scripts/01_scripts/stacks_gstacks.sh
+
 # open the file
 less ~/scripts/01_scripts/stacks_gstacks.sh
+
 # to exit less, press 'q'
 ```
 

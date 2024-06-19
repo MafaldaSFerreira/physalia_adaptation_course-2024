@@ -73,6 +73,9 @@ PLINK requires a [BIM](https://www.cog-genomics.org/plink/1.9/formats#bim) file 
 Next, we briefly explain what the commands below means. The `WINDOW=200000` parameter allows storing in a variable called "WINDOW" a value of 200000 bp. We next call this variable with `$WINDOW` in the plink line. Same for `SNP` and `R2`. The `--out` parameter allows us to give a prefix, on which PLINK will add a suffix describing the file name (e.g. `*.prune.in`).
 
 ```bash
+# activate the conda environment
+conda activate adaptg
+
 # prepare files
 #gunzip 02_data/canada.vcf.gz  # use this command to uncompress the file
 plink --vcf 02_data/canada.vcf --make-bed --out 02_data/canada
@@ -285,9 +288,6 @@ ls 05_baypass/
 ```
 
 #### Run BayPass controlled for population structure
-We installed BayPass on the `Share/` directory. However, your working session doesn't know where it has been installed. So we have to add the path to the binaries BayPass to the `PATH` variable. In such, use the following command line: `echo "export PATH=$PATH:~/Share/baypass_2.3/sources/" >> ~/.bashrc`.
-
-After, you have to source the config file where we added this line using this command `source ~/.bashrc`.
 
 Then test that BayPass is well referenced for your session by typing `g_baypass`. This will give you :
 ```bash
@@ -302,6 +302,9 @@ We want to pinpoint the outlier SNPs that differ from the basic structure of the
 Best practices suggest to first run BayPass on the LD-pruned VCF file, extract the covariance matrix between populations (`mat_omega`), and then use it as a covariate in the BayPass model. This will take a few minutes to run:
 
 ```bash
+# activate the conda environment
+conda activate adaptg
+
 # run on pruned snps
 g_baypass -npop 12 -gfile 05_baypass/canada.pruned.baypass -outprefix 05_baypass/prunedsnps.output -nthreads 2
 
@@ -427,6 +430,10 @@ Here is the example with the covariate matrix controlling for a possible underly
 
 This may take a few minutes:
 ```bash
+# do not forget to activate the conda environment
+conda activate adaptg
+
+# continue the analysis
 cd 03_day3
 
 g_baypass -npop 12 -gfile 05_baypass/G.simulates_pods \

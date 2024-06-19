@@ -36,6 +36,9 @@ To get a better sense of what's going on, we will be running a PCA again, but al
 
 #### Prepare files
 We will skip the preparation of the file and the 1st steps of lostruct to read and prepare the windows because R does not communicate with bcftools on the AWS and we want to save you time. So keep in mind that there are preparative steps if you want to re-do the analysis on your dataset. 
+
+> Fix the link:
+
 [Link to preliminary steps in_lostruct](https://github.com/clairemerot/physalia_adaptation_course/blob/master/04_day4/01_haploblocks/step0_filepreparation.md)
 
 Briefly, this analysis is more powerful if we keep all SNPs, including those in LD, so we will use the unfiltered VCF (before we even selected one random SNP per RAD locus) for the 12 canadian populations. We convert this file into BCF format. Then we use a function in lostruct to make windows of your chosen size. We suggest to use window of 100 SNPs since coverage of the genome is low (RAD data) and we don't have a lot of SNPs. Typically, with whole genome data you may first run windows of 1000 or 5000 SNPs for a first look, and then refine the analysis with smaller windows. The analysis can be run chromosome by chromosome (as in the paper) or on the entire genome. Here, we are going for the entire genome.

@@ -26,7 +26,7 @@ Now that we have created a "whitelist" listing the 100 most differentiated marke
 ```bash
 cd ~/stacks
 mkdir populations_canada_random_highfst
-populations -t 16 -P ~/stacks/gstacks/ -M ~/scripts/popmap_canada.txt -O populations_canada_random_highfst --fstats --vcf --genepop --structure -W ~/stacks/populations_canada_random/high_fst.whitelist.tsv
+populations -t 16 -P ~/stacks/gstacks/ -M ~/scripts/popmap_canada_day1.txt -O populations_canada_random_highfst --fstats --vcf --genepop --structure -W ~/stacks/populations_canada_random/high_fst.whitelist.tsv
 ```
 
 Whitelists and blacklists are very useful to select or discard loci for analysis. For quick data exploration, or for analyses that don't require or can't handle large datasets, you can use a similar code to create a whitelist with a random subset of SNPs. For 1000 SNPs for example, one can use:
@@ -59,4 +59,4 @@ Population pair divergence statistics (more in populations.fst_summary.tsv and p
 
 Here, the value of π are not very different because they are averaged over only the polymorphic sites (which is NOT how we should estimate π anyway). Same for F<sub>ST</sub>. Do you see how different the haplotype-based estimates are? They are all lower in the random-SNP dataset because Stacks computes these statistics as if there was only one polymorphic site in each of these loci.
 
-
+*** Note: the statistics in this file might differ from the ones you obtain with the input files in the server. The files in the server are different from the ones used to generate these statistics. ***

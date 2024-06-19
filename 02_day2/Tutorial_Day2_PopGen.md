@@ -38,6 +38,9 @@ There are many ways, approaches, software, and formulas to calculate F<sub>ST</s
 
 In VCFtools you need to provide two files, a file listing the samples for each population that should be included in the calculation, and a VCF file with all genetic variants and associated information. For the reduced dataset, including only 80 individuals from Greenland and Canada, you will find the list of samples for each of the two lineages in the `~/scripts/` folder. The VCF file name is `populations.snps.vcf`, one for each of the datsets we analyzed. For example, to calculate F<sub>ST</sub> in the smallest of the three datasets we produced, type:
 ```bash
+# activate the conda environment
+conda activate adaptg
+
 # uncompress file
 gunzip populations_2lin_random/populations.snps.vcf.gz
 
@@ -138,6 +141,10 @@ In genomics, PCA are multivariate analyses which could be biases by extremely ra
 
 So we will also restrict our matrix to the most frequent SNPs (MAF> 1%). We can do this using VCFtools:
 ```bash
+# activate the conda environment
+conda activate adaptg
+
+# run vcftools 
 vcftools --vcf populations_2lin_random/populations.snps.vcf --maf 0.01 --012 --out pca/populations_2lin_random
 
 # if the second file is not unzipped, use:
