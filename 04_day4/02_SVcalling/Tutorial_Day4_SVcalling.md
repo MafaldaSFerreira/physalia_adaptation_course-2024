@@ -7,7 +7,9 @@
     - [PCA to compare patterns from different types of genetic variation](#pca-to-compare-patterns-from-different-types-of-genetic-variation)
 
 
-**Note: This practical has been part of the course in previous editions. Although we will not cover it this year, We leave it here in case you would like to follow the pipeline and apply it on your own datasets.**
+
+**NOTE:** This practical has been part of the course in previous editions. Although we will not cover it this year, we leave it here in case you would like to follow the pipeline and apply it on your own datasets.
+
 
 # 4-2. Structural Variant (SV) calling from whole genome resequencing data
 Today we have explored the importance of structural variants in ecology and evolution, and you have tested different approaches to investigate haploblocks on genomic data, RADseq in this case. However, explicitely testing for the presence of SVs associated with haploblocks is not really possible with RADseq data (but see Yann's paper on detecting CNVs from RADseq data; [Dorant et al. 2020, Molecular Ecology](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.15565)), so we'll now use whole genome resequencing data (Illumina short reads) from a few capelin samples. From these data, we can call both SNPs (sequence variation - done on Monday) and SVs (structural variation) and test whether the two provide concordant patterns of variation and differentiation, or not.
