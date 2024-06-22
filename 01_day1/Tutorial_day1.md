@@ -35,8 +35,7 @@ cp -r ~/Share/physalia_adaptation_course/01_day1/01_scripts .
 ```
 >Note that in this code block some lines start with a hash (#) symbol. The hash causes these lines to be ignored (not executed) and allows us to add comments to our code. Commenting your code is a very good practice that helps everyone, not just you, understand what it does, making easier to reuse the code in the future! 
 
-You can use `ls` to list (explore) the files available in the current directory. 
-
+You can use `ls` to list the directories and files in the current directory. For a nicer display of the hierarchical structure of the content of the current directory, you can use `tree .`.
 
 Next, explore some files using the `less` command. Note that when using `less`, you can scroll-down by pressing the Space bar on your keyboard, and exit `less` with `q`:
 ```bash

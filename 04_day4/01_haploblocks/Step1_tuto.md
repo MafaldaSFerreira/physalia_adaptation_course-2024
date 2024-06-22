@@ -1,4 +1,4 @@
-## Step 1 Genotyping the individuals
+## Step 1. Genotyping the individuals
 Thanks to our local PCA exploration, we know that there are non-recombining haploblocks which may be explained by a chromosomal inversion in chromosome 4.
 We located the breakpoints approximately from 4.8MB to 16.6MB.
 
