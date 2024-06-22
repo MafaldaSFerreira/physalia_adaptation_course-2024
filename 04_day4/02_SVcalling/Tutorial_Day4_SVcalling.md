@@ -8,11 +8,12 @@
 
 
 # 4-2. Structural Variant (SV) calling from whole genome resequencing data
-oday we have explored the importance of structural variants in Ecology and Evolution, and you have tested different approaches to investigate haploblocks identified through reduced representation approaches such as RADseq. However, explicitely testing for the presence of SVs associated with haploblocks is not really possible with RADseq data (but see Yann's paper on detecting CNVs from RADseq data; [Dorant et al. 2020, Molecular Ecology](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.15565)), so we'll now use whole genome resequencing data (Illumina short reads) from a few capelin samples. From these data, we can call both SNPs (sequence variation - done Monday) and SVs (structural variation) and test whether the two provide concordant patterns of variation and differentiation, or not.
+Today we have explored the importance of structural variants in ecology and evolution, and you have tested different approaches to investigate haploblocks on genomic data, RADseq in this case. However, explicitely testing for the presence of SVs associated with haploblocks is not really possible with RADseq data (but see Yann's paper on detecting CNVs from RADseq data; [Dorant et al. 2020, Molecular Ecology](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.15565)), so we'll now use whole genome resequencing data (Illumina short reads) from a few capelin samples. From these data, we can call both SNPs (sequence variation - done on Monday) and SVs (structural variation) and test whether the two provide concordant patterns of variation and differentiation, or not.
 
 ### SVs calling
-Calling structural variants (i.e., inversions, deletions, insertions, duplications, translocations) requires analyzing different types of information from the sequence data, such as read overlap, orientation and splitting. Therefore, we need software specifically designed to extract this kind of information. One commonly used of these programs is [Delly2](https://academic.oup.com/bioinformatics/article/28/18/i333/245403), which takes into account all of these 3 types of information. 
-This below is the general approach to call SVs from Delly2:
+Calling structural variants (i.e., inversions, deletions, insertions, duplications, translocations) requires analyzing different types of information from the sequence data, such as *read overlap, orientation and splitting*. Therefore, we need software specifically designed to extract this kind of information. One commonly used program for this purpose is [Delly2](https://academic.oup.com/bioinformatics/article/28/18/i333/245403), which takes into account all of these 3 types of information. 
+
+Below is the general approach to call SVs using Delly2 (**don't execute these commands**):
 ```bash
 # germline SV calling
 # SV calling is done by sample for high-coverage genomes or in small batches for low-coverage genomes
@@ -34,29 +35,43 @@ delly filter -f germline -o germline.bcf merged.bcf
 
 ```
 However, in our case, we have low-coverage whole genome resequencing data from only 12 individuals, so we can call SVs directly from all the samples combined and forego the filtering step. Keep in mind that this is just a toy dataset, and the quality of these SV calls may not be very high.
-You can run this code, but it will take > 1h. If you prefer, you can copy the VCF file directly with the second block of commands.
+
+You can run the code immediately below on the server, but it will take > 1h. So, if you prefer to save some time and move forward in the tutorial, skip this part and go to the next block of commands.
 ```bash
 cd
 cd wgr
 mkdir svs_delly
-
+# create symbolic links to te bam files
 ln -s /home/ubuntu/Share/WGS_bam/* .
 
 # run delly to call SVs on all samples combined
-delly call -g ~/Share/resources/genome_mallotus_dummy.fasta -o svs_delly/capelin_sv.bcf BELB9.bam BELD3.bam BLA13.bam BLA15.bam BLA16.bam BLA17.bam BLA22.bam BLA24.bam BSO17.bam BSO23.bam BSO28.bam POR19.bam 
+delly call -g ~/Share/resources/genome_mallotus_dummy.fasta -o svs_delly/capelin_sv.bcf \
+BELB9_1.trimmed.sorted.reheader.bam \
+BELD3_1.trimmed.sorted.reheader.bam \
+BLA13_1.trimmed.sorted.reheader.bam \
+BLA15_1.trimmed.sorted.reheader.bam \
+BLA16_1.trimmed.sorted.reheader.bam \
+BLA17_1.trimmed.sorted.reheader.bam \
+BLA22_1.trimmed.sorted.reheader.bam \
+BLA24_1.trimmed.sorted.reheader.bam \
+BSO17_1.trimmed.sorted.reheader.bam \
+BSO23_1.trimmed.sorted.reheader.bam \
+BSO28_1.trimmed.sorted.reheader.bam \
+POR19_1.trimmed.sorted.reheader.bam
 
-# convert file from .bcf to .vcf
+# convert file from *.bcf to *.vcf
 cd svs_delly
 bcftools convert -O v -o capelin_sv.vcf capelin_sv.bcf
 
 ```
-To copy the VCF file containing all the SVs into `~/wgr/svs_delly`
+To copy the VCF file containing all the SVs into `~/wgr/svs_delly` use:
 ```bash
-# make the wgr directory and the svs_delly directory if you haven't yet
+# (If not done already) make the wgr directory and the svs_delly directory 
 mkdir wgr
 cd wgr
 mkdir svs_delly
 cd svs_delly
+
 # copy the VCF of SVs that was produced for all of us with the code above
 cp ~/Share/WGS_bam/svs_delly/capelin_sv.vcf ~/wgr/svs_delly/.
 
@@ -118,8 +133,9 @@ Download the resulting files on your computer.
 ### PCA to compare patterns from different types of genetic variation
 On your computer in R, perform one PCA and plot results based on each type of structural variant. The one below is the code for the PCA based on all SVs. Once you've done this, modify the script to perform the analysis on each type of SV and on the SNPs.
 ```R
-# load the population map with population assignment for each individual
+# load package
 library(dplyr)
+# load the population map with population assignment for each individual
 popmap_delly <- read.table("popmap_capelin_wgr_delly.txt", header = FALSE)
 colnames(popmap_delly) <- c("Sample", "Pop")
 

@@ -1,4 +1,4 @@
-Here is the script for the Canada dataset:
+Here is the script for the Canadian dataset:
 ```bash
 cd ~/scripts
 ### The command below is to count the number of different populations present in the dataset to set the -p command in the program populations

@@ -1,0 +1,1 @@
+Input data files for the SnpEff exercise. Note that these files need to be placed in the `~/Share/resources` directory and uncompress using `gunzip` or similar command.

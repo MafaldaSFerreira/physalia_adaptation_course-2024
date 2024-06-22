@@ -204,7 +204,7 @@ devtools::install_github("whitlock/OutFLANK")
 BiocManager::install("StAMPP") # install via BioConductor
 
 ```
->Answer "yes" if asked to install additional libraries.
+>Answer "yes or all" if asked to install additional libraries.
 
 Check that the packages were installed correctly with:
 ```R

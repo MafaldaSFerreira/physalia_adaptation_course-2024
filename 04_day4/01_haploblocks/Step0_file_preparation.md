@@ -4,9 +4,9 @@
 First you need to process the unfiltered vcf for the 12 NWA populations. We will here use the vcf before selecting one random SNP per loci (i. e. a vcf with all SNPs even if they are linked) because we need as much information as possible when we are looking for LD. I have placed a version of the full vcf in `Share/resources`.
 We will use several programms to convert the vcf into a bcf, sort it and index it.
 The package lostruct can also take a vcf but it is heavy to load the whole file. Instead, they made function that is able to cut the vcf window by window to avoid overloading the memory (but this requires a sorted, indexed bcf)
+
 ```bash
 # we need to sort the vcf
-#(grep ^"#" ../../Share/resources/capelin_NWA.vcf; grep -v ^"#" capelin_NWA.vcf | sort -k1,1 -k2,2n) > 00_localPCA/capelin_NWA_sorted.vcf
 cp 02_data/canada.vcf 00_localPCA
 cd 00_localPCA
 (grep ^"#" canada.vcf; grep -v ^"#" canada.vcf | sort -k1,1 -k2,2n) > capelin_NWA_sorted.vcf
@@ -19,6 +19,7 @@ tabix -fp vcf 00_localPCA/capelin_NWA_sorted.vcf.gz
 bcftools convert -O b 00_localPCA/capelin_NWA_sorted.vcf.gz > 00_localPCA/capelin_NWA_sorted.bcf
 bcftools index 00_localPCA/capelin_NWA_sorted.bcf
 ```
+
 To check whether this has worked and produced files, you can do a quick ```ls -lh``` which will show you the size of the files in human-readable format
 
 Now we are good to work in R with the library. This requires some computational power and memory, so we suggest to make the initial steps in R command lines on the server and then copy the output files to visualise on your local Rstudio
@@ -29,10 +30,11 @@ To start R in command line, just type "R". Now you have a R console and we wil r
 # open library
 library(lostruct)
 options(datatable.fread.input.cmd.message = FALSE)  # disable a useless message
-snps <- vcf_windower("00_localPCA/capelin_NWA_sorted.bcf", size = 100, type = "snp", sites = vcf_positions("00_localPCA/capelin_NWA_sorted.bcf"))
+snps <- vcf_windower("00_localPCA/capelin_NWA_sorted.bcf", size = 5, type = "snp", sites = vcf_positions("00_localPCA/capelin_NWA_sorted.bcf"))
 ```
-This function makes windows out of the given data file of your chosen size. You can choose the size of the window with "size" and on which variable you want to split ('snp' or 'bp'). We suggest to use window of 100 snp since we are not very dense (RAD data) and we don't have a lot of snps.Typically with whole genome you may first run by windows of 1000 or 5000 snps for a first look, and then refine with smaller windows. The analysis can be run chromosome by chromosome (as in the paper) or on the entire genome. Here, we are going for the entire genome.
+This function makes windows out of the given data file of your chosen size. You can choose the size of the window with "size" and on which variable you want to split ('snp' or 'bp'). We suggest to use window of 5 SNPs since RADseq data only contains a few SNPs per given genomic region. Typically, with whole genome you may first run by windows of 1000 or 5000 snps for a first look, and then refine with smaller windows. The analysis can be run chromosome by chromosome (as in the paper) or on the entire genome. Here, we are going for the entire genome.
 You can display for instance the 5th window and know its location by doing
+
 ```R
 snps(5)
 region(snps) (5)
@@ -54,7 +56,7 @@ head(window_pos)
 
 # keep windows without NA
 window_pos_noNA <- window_pos[-which(is.na(pcs[, 1])), ]
-# merge
+# mergels
 pca_matrix_noNA <- cbind(window_pos_noNA, pcs_noNA)
 head(pca_matrix_noNA[, 1:10])
 

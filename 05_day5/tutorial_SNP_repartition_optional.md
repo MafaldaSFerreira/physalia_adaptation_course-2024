@@ -32,7 +32,6 @@ outlier_temp_rda <- read.table("03_outliers/outlier_temp_rda.txt", header = TRUE
 head(outlier_temp_rda)
 
 # use the inner-join() function to match the two datatables and keep only rows in common
-
 outlier_annotated <- inner_join(outlier_temp_rda, snpEff_db)
 head(outlier_annotated)
 

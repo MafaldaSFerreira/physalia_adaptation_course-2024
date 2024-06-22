@@ -6,6 +6,7 @@
 - [1-2. From raw sequences to mapped data](#1-2-from-raw-sequences-to-mapped-data)
   - [Pre-processing of raw data](#pre-processing-of-raw-data)
     - [FASTQ](#fastq)
+  - [Conda environment](#conda-environment)
   - [Mapping sequence reads to a reference genome](#mapping-sequence-reads-to-a-reference-genome)
     - [SAM/BAM](#sambam)
 - [1-3. Call variants with Stacks](#1-3-call-variants-with-stacks)
@@ -14,11 +15,11 @@
 
 
 ## 1-1. Getting familiar with the Unix environment
-While we assume that you are comfortable working with the Terminal and under the Unix environment, we will refresh some of the most common commands that we will use during the tutorials. 
+While we assume that you are comfortable working with the command line and under the Unix environment, we will refresh some of the most common commands that we will use during the tutorials. 
 
-When you log in to the AWS server, you are positioned in the home directory. You can easily return to the home directory whenever you want by typing `cd` (and pressing the `Enter/Return` key).
+When you log in to the AWS server, you are positioned in the home directory. You can easily return to the home directory whenever you want by typing `cd` and pressing the `Enter/Return` key.
 
-Let's start by creating a new directory called `scripts` within the home directory, and copy there some files we will need later:
+Let's start by creating a new directory called `scripts` within the home directory, and copy there using `cp` some files we will need later:
 ```bash
 # make sure you are in the home directory
 cd
@@ -32,8 +33,12 @@ cp -r ~/Share/physalia_adaptation_course/00_documents/* .
 cp -r ~/Share/physalia_adaptation_course/01_day1/01_scripts .
 
 ```
+>Note that in this code block some lines start with a hash (#) symbol. The hash causes these lines to be ignored (not executed) and allows us to add comments to our code. Commenting your code is a very good practice that helps everyone, not just you, understand what it does, making easier to reuse the code in the future! 
 
-Use `ls` to list (explore) the files available in the current directory. Next, explore some files using the `less` command. Note that when using `less`, you can scroll-down by pressing the Space bar on your keyboard, and exit `less` with `q`:
+You can use `ls` to list (explore) the files available in the current directory. 
+
+
+Next, explore some files using the `less` command. Note that when using `less`, you can scroll-down by pressing the Space bar on your keyboard, and exit `less` with `q`:
 ```bash
 # explore the content of the current directory
 ls
@@ -48,13 +53,15 @@ If you want to print a few lines of a file to the screen (which won't disappear 
 ```bash
 head popmap_2lin_day1.txt
 ```
-The `head` command prints the first 10 lines by default. You can specify the number of lines you want to print with `-n` followed by the number of lines, e.g. `-n 25`. Same for `tail`, which shows the last 10 lines of a file.
+The `head` command prints the first 10 lines by default. You can specify the number of lines you want with the flag `-n` followed by the number of lines, e.g. `-n 25`. Same for `tail`, which shows the last 10 lines of a file.
+
+If you want to print an entire file on the screen (the standard output in this case) then use `cat`, and the equivalent command for compressed files is `zcat`, e.g. `zcat -n 1 ~/Share/physalia_adaptation_course/01_day1/02_genome/genome_mallotus_dummy.fasta.gz`. 
 
 Make a copy of a file and assign a different name:
 ```bash
 cp popmap_2lin_day1.txt test_popmap.txt
 ```
-To edit files, we will use the text editor called `nano`:
+To edit a file, we will use the text editor called `nano`:
 ```bash
 nano test_popmap.txt
 ``` 
@@ -122,28 +129,25 @@ When we have paired-end reads, they are generally stored in two separate files a
 All the software that you need to run the exercises in our course is installed in a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html). With conda, you can create separate working environments containing software and package versions that you need for a specific analysis. 
 
 To load the environment we use in this course run the following line:
-
-```
+```bash
 conda activate adaptg
 ```
 
-You will see that your promt now shows the following:
-
+You will see that your prompt now shows the following:
+```bash
+(adaptg) ubuntu@ip-172-31-16-191:
 ```
 
-(adaptg) ubuntu@ip-172-31-16-191::
-```
+This means the environment is activated and you can run all software just by typing the name in the command line.
 
-This means the environment is activate and you can run all software just by typing the name in the command line.
-
-```If you try to run a software and it does not run, remember to check if your conda environment is active.```
+>OBS! If you try to run a software and it does not run, remember to check if your conda environment is active.
 
 ### Mapping sequence reads to a reference genome
 As we are analyzing a large read dataset that could take several hours to align against a reference genome, we did this step for you. You can find a step-by-step breakdown of the script here:
 
-[Script to map reads to a reference genome](script_on_read_mapping.md)
+[Script to map reads to a reference genome](script_on_read_mapping.md).
 
-Now, go to your home directory, make a new directory for the alignment files and create a symbolic link to the [BAM](https://samtools.github.io/hts-specs/SAMv1.pdf) files stored in the `~/Share` directory. With a symbolic link, you add the files to a path of your choice, but because they are not physically there you are not using up the space.
+Now, go to your home directory, make a new directory for the alignment files and create a symbolic link to the [BAM](https://samtools.github.io/hts-specs/SAMv1.pdf) files stored in the `~/Share` directory. With a symbolic link, you add the files to a path of your choice, but because they are not physically there you are not using up storage space.
 ```bash
 cd 
 mkdir bamfiles
@@ -155,11 +159,11 @@ ln -s ~/Share/bamfiles/*.bam .
 #### SAM/BAM
 The alignment file contains much more information than the raw data `*.fastq` files. In addition to all the information contained in the `*.fastq` files, we now have information of the quality of the alignment and the position of where those reads mapped on the genome. Although we produce `*.sam` files with the alignment, we quickly convert them to `*.bam`, which is their binary format. These files are not readable directly but you can use these command to visualize them:
 ```bash
-# activate the conda environment
+# activate the conda environment (if not done already)
 conda activate adaptg
 
-# run samtools
-samtools view -h BEL-B_12.bam | less 
+# run samtools to explore the bam file
+samtools view -h BEL-B_12.sorted.bam | less 
 ```
 With the pipe sign `|`, we pass the output of the first command into the second command.
 The first few lines starting with `@` correspond to the header. If you have a lot of scaffolds in your reference genome, the header could be very long. If you want to see the first few alignments, remove `-h` from the command above.
@@ -180,18 +184,18 @@ Each of the two pipelines includes several steps, which are shown below:
 
 2. `ref_map.pl` = `gstacks` -> `populations`
 
->Note that all the code here included was tested using Stacks v.2.6.6.
+>Note that all the code here included was tested using Stacks v.2.66.
 
-As you might have guessed already, the first 4 steps in `denovo_map.pl` are for assembling loci from short reads for each individual, and for creating a catalog of all loci across the population when you don't have a reference genome. The next two steps are shared between the two pipeline. `gstacks` builds a catalog of loci and calls SNPs in each sample, and `populations` generates population-level summary statistics and input files for a variety of software for downstream analyses.
+As you might have guessed already, the first 4 steps in `denovo_map.pl` are for assembling loci from short reads for each individual, and for creating a catalog of all loci across the population when you don't have a reference genome. The next two steps are shared between the two pipelines. `gstacks` builds a catalog of loci and calls SNPs in each sample, and `populations` generates population-level summary statistics and input files for a variety of software for downstream analyses.
 
-As our targe species has a reference genome, we will focus on the `ref_map.pl` pipeline. For those interested in the `denovo_map.pl` pipeline, this article is a great resource to pick the most appropriate combination of parameters:
+As our target species has a reference genome, we will focus on the `ref_map.pl` pipeline. For those interested in the `denovo_map.pl` pipeline, this article is a great resource to select the most appropriate combination of parameters:
 >Paris, J. R., Stevens, J. R., & Catchen, J. M. (2017). Lost in parameter space: a road map for stacks. Methods in Ecology and Evolution, 8(10), 1360-1373.
 
 Although the modules `gstacks` and `populations` can be run on one go with the `ref_map.pl` pipeline, we generally call variants in `gstacks` once, and then run `populations` several times to tune-in variant filtering, to print variants for different subsets of samples, and to generate F-statistics for each of these subsets.
 
 Please copy the scripts inside your directory and make executable the one we are interested in:
 ```bash
-# activate the conda environment, if it is not yet
+# activate the conda environment, if not done already
 conda activate adaptg
 
 # come back to your home
@@ -200,11 +204,11 @@ cd
 # get inside your scripts
 cd scripts 
 
-# now copy files inside your 01_scripts directory. (replace the one you may have copy earlier as I edited them)
+# now copy files inside your 01_scripts directory (replace the one you may have copied earlier as we edited them)
 cp ~/Share/physalia_adaptation_course/01_day1/01_scripts/*.sh 01_scripts/
 
 # make the file executable
-# notice that the script name has turned green?
+# notice that the script name has turned green
 chmod +x ~/scripts/01_scripts/stacks_gstacks.sh
 
 # open the file
@@ -252,7 +256,7 @@ To expedite things (and while the first gstacks script runs), we can focus on a 
 nohup bash ~/scripts/01_scripts/stacks_gstacks_2lin.sh >& gstacks_2lin.log &
 ```
 
-Once we have our catalog of variants in the `gstacks_2lin` directory we can run `populations` to apply quality filters and print variant files in different formats. As `populations` is very fast for this small dataset, we can run it from the Terminal. But first, make the directory where you want your results to be saved:
+Once we have our catalog of variants in the `gstacks_2lin` directory, we can run `populations` to apply quality filters and print variant files in different formats. As `populations` is very fast for this small dataset, we can run it from the Terminal. But first, make the directory where you want your results to be saved:
 ```bash
 cd ~/stacks
 
@@ -264,7 +268,7 @@ populations -P ~/stacks/gstacks_2lin/ -M ~/scripts/popmap_2lin_day1.txt -O ~/sta
 
 Let's break the scripts down to understand what `populations` is doing here:
 
-  `-P` path to the directory containing the Stacks files.
+  `-P` path to the directory containing the Stacks files
 
   `-M` path to a population map
 
@@ -284,11 +288,13 @@ Also note that the files within each directory have very standardized names (che
 
 >Pro: we don't need to taylor all our scripts to the individual file names, BUT if you don't specify the right directory, you are going to overwrite the existing files causing a lot of confusion on what setting and samples you used for a particular run.
 
-Although we applied stringent filters to minimize the amount of missing data, these are applied at the SNP level, and we could have single individuals that, for a variety of reasons, have a high proportion of missing data (e.g., poor DNA quality, low DNA concentration, pipetting errors). We can check the amount of missing data for each individuals with:
+Although we applied stringent filters to minimize the amount of missing data, these are applied at the SNP level, and we could have single individuals that, for a variety of reasons, have a high proportion of missing data (e.g., poor DNA quality, low DNA concentration, pipetting errors). We can check the amount of missing data for each individual with:
 ```bash
 cd populations_2lin_random
+# run vcftools to compute missing rates
 vcftools --vcf populations.snps.vcf --missing-indv --out missing
-sort -rk5,5 missing.imiss | less # with this you will visualize individuals by % of missing data, from the highest to the lowest
+# with this you will visualize individuals by % of missing data, from the highest to the lowest
+sort -rk5,5 missing.imiss | less 
 ```
 Ideally, % of missing data should be below 5%. 
 
@@ -298,7 +304,7 @@ If you do `ls` to list the files in one of the folders storing the output from t
 
 For each output type, open the corresponding file on the server, and take your time to explore them.
 
-Here you've executed the pipeline on 80 individuals. Before we wrap up today, you need to create the same input files for the full dataset (280 individuals listed in popmap_all_day1.txt) and the Canada dataset (240 individuals listed in `popmap_canada_day1.txt`). 
+Here you've executed the pipeline on 80 individuals. Before we wrap up today, you need to create the same input files for the full dataset (280 individuals listed in `popmap_all_day1.txt`) and the Canada dataset (240 individuals listed in `popmap_canada_day1.txt`). 
 
 You should have already run the script `~/scripts/gstacks_stacks.sh`. Now, run `populations` on the new catalog twice, once for all individuals, and once for just the Canadian samples. 
 
@@ -313,16 +319,14 @@ Make sure you print these outputs in each of these two directories `populations_
 
 If you are struggling with this last step, have a look at the solution [here](populations_script.md).
 
-**IMPORTANT: Do not use the output files from today during the rest of the course. We will use other inputs.** 
+>**IMPORTANT: Do not use the output files from today during the rest of the course. We will use other inputs.** 
 
 ### Variant calling from whole genome re-sequencing data
 First, let's set up new folders for these analyses:
 ```bash
 cd
 mkdir wgr # for whole genome resequencing data
-
 mkdir wgr/snps_bcftools
-
 ```
 
 ### SNPs calling
@@ -330,15 +334,17 @@ Set symbolic links to the BAM files and their indexes storing aligned reads to r
 ```bash
 cd wgr
 ln -s /home/ubuntu/Share/WGS_bam/*bam* .
-
-ls *.bam > bams_list.txt # create a list of bam files
+# create a list of bam files in a text file
+ls *.bam > bams_list.txt 
 ```
 
 Call variants using [bcftools](https://samtools.github.io/bcftools/):
 ```bash
 bcftools mpileup -Ou -f ~/Share/resources/genome_mallotus_dummy.fasta -b bams_list.txt -r Chr1 -q 5 -I -a AD,DP,SP,ADF,ADR -d 200 | bcftools call - -mv -Ov > snps_bcftools/capelin_wgs_unfiltered.vcf
-
 ```
+>This step may take a few minutes (~10 min), so it's a good time to take a short break from the computer :)
+
+
 Variant filtering is done in two steps. First we use `bcftools filter` to filter SNPs based on mapping quality. Then, we apply a series of filters using [VCFtools](https://vcftools.github.io/index.html). Note that we are calling variants for chromosome 1 only to save time:
 ```bash
 cd snps_bcftools
@@ -365,17 +371,17 @@ grep -v "#" capelin_wgs_filtered.vcf | wc -l
 
 ```
 
-Because the variant calling takes quite some time, you can copy the original unfiltered, clean files to your working directory to explore the different files and play with filtering:
+Because the variant calling could take some time, you can copy the premade unfiltered clean files to your working directory to explore the different files and play with filtering:
 ```bash
 cp ~/Share/WGS_bam/snps_bcftools/capelin_wgs_*.vcf ~/wgr/snps_bcftools/.
 
 ```
 >What is the proportion of SNPs surviving filters? How many are left? According to your dataset and needs, you may want to change or tweak these filters.
 
-Finally, prepare the data for downstream analyses by recoding the genotypes in [012 format](https://vcftools.github.io/man_0112a.html) with:
+Finally, prepare the data for downstream analyses by recoding the genotypes in [012 format](https://vcftools.github.io/man_0112a.html):
 ```bash
 vcftools --vcf capelin_wgs_filtered.vcf --012 --out capelin_wgs_filtered
 
 ```
 
-**IMPORTANT: Do not use the output files from today during the rest of the course. We will use other inputs.** 
+**IMPORTANT: As the files used today were generated to be small for quicker analysis, we will use different ones for the rest of the course.** 

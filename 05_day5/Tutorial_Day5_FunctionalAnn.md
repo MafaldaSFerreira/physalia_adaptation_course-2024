@@ -1,6 +1,6 @@
 # Day 5. Functional annotation of candidate loci for adaptation <!-- omit from toc -->
 
-Today, we will explore SNP annotation to see if they fall on genes of known function, and evaluate the distribution of outlier SNPs across exons, introns, regulatory regions, etc. We will also look at the annotation of repeats and transposable elements and compare that to our CNV detection.
+Today, we will explore annotation of SNPs to see if they fall on genes of known function, and evaluate the distribution of outlier SNPs across exons, introns, regulatory regions, etc. We will also look at the annotation of repeats and transposable elements and compare that to our CNV detection.
 
 ## Table of contents <!-- omit from toc -->
 - [Getting started](#getting-started)
@@ -16,26 +16,25 @@ Today, we will explore SNP annotation to see if they fall on genes of known func
 
 
 ## Getting started 
-First of all, please copy folder `05_day5` into your directory and open it. We will work from there all day.
-
+First, copy the directory `05_day5` into your home directory and go there. We will work from there for teh rest of the tutorial:
 ```bash
 cd
 cp -r ~/Share/physalia_adaptation_course/05_day5 .
 cd 05_day5
 ```
-
-Now you should have everything we need for today. You can explore the different folders and files
-`ls 02_data` in which you will find the vcf, `ls 03_outliers` in which I put the `.txt` files that we exported on **Day 3** when analyzing the association with temperature, and on **Day 4** when analyzing divergence between haploblocks or between sexes.
+You can explore the different directories and files with `ls 02_data`, where you will find the VCF file, `ls 03_outliers`, where you will find the `.txt` files that we exported on Day 3 when analyzing the association with temperature, and on Day 4 when analyzing divergence between haploblocks or between sexes. A nicer display of the hierarchical structure of directories and files can be generated using the command `tree .`.
 
 You will also find the list of all SNPs present in the VCF. You can look at each file with the command `head 03_outliers/SNP_pos.txt` for instance.
 
 The annotated transcriptome (which is generally in `.gff` format) is located at the following path `~/Share/resources/`. A copy of the `.gff` transcriptome is inside the `02_data` folder.
-You don't need to copy them as we have prepared simplified files (in R, simply selecting the relevant column) when needed. You may want to have a look to get a sense of what it looks like using `less ~/Share/resources/genome_mallotus_dummy.gff3`. Press `q` to exit the less visualization. 
+
+You don't need to copy these files as we have prepared simplified ones when needed (in R, simply selecting the relevant column). You may want to have a look at this file to get a sense of how it looks like, by using `less ~/Share/resources/genome_mallotus_dummy.gff3`. Press `q` to exit `less`. 
+
 
 ## 5-1. SNP annotation with SnpEff 
+[SnpEff](https://pcingola.github.io/SnpEff/) is a program that uses the gene annotations in a `.gff` file format and the genomic position of each SNP to annotate the VCF file with the potential impact of genetic variants on genes and proteins, including changes in amino acids.
 
-SnpEff is a program that uses the `.gff` file and the position of each SNP to annotate the VCF.
-If you work on a model species which already has a database, you are lucky! If not, you need to build a SnpEff database. 
+If you work on a model species which already has a database reported in snpEff, you are lucky! If not, you need to build a SnpEff database. 
 
 Here, we have already built the database for you as this is a long process and takes some space on the server. 
 
@@ -43,21 +42,23 @@ Here, we have already built the database for you as this is a long process and t
 
 If you want to re-create it, the `.gff` is inside the `02_data` while the reference genome is in the folder `01_day1/02_genome`.
 
-If you want to, you can look at the database by doing:
-
+If you want to, you can look at the database available on the server by using:
 ```bash
-java -jar ~/Share/resources/snpEff/snpEff.jar dump genome_mallotus_dummy | less
+# save in an environmental variable the path on the server to the executable (*.jar) file of SnpEff
+PATH_TO_SNPEFF="/home/ubuntu/src/conda/envs/adaptg/share/snpeff-5.2-1"
+
+java -jar $PATH_TO_SNPEFF/snpEff.jar dump genome_mallotus_dummy | less
 ```
-It may take a minute to open. To exit less, press `q`.
+It may take a minute to open. To exit `less`, press `q`.
 
 ### Annotate the VCF file 
 Now we can annotate the VCF file. We use a raw VCF file in the folder `02_data` and will write the output into the folder `04_snpEff` in which we will have all subsequent files related to the SnpEff analyses.
 ```bash
-java -Xmx4g -jar ~/Share/resources/snpEff/snpEff.jar genome_mallotus_dummy 02_data/canada.vcf > 04_snpEff/canada_annotated.vcf
+java -Xmx4g -jar $PATH_TO_SNPEFF/snpEff.jar genome_mallotus_dummy 02_data/canada.vcf > 04_snpEff/canada_annotated.vcf
 ```
 Let's look at the new VCF `less -S 04_snpEff/canada_annotated.vcf`. As you can see, it keeps the VCF format with its specific header, and adds annotation information for each SNP. However, this information is not easy to import into R as it is now.
-To continue the analyses, we will use a few bash commands and awk to split the information by the symbol `|` and produce a new tab delimited table.
 
+To continue the analyses, we will use a few bash commands and awk to split the information by the symbol `|` and produce a new tab delimited table:
 ```bash
 # convert the table delimiter from | to \t
 cat 04_snpEff/canada_annotated.vcf | awk -F"|" '$1=$1' OFS="\t" | cut -f 1-9 > 04_snpEff/SNP_annotated_formatted.txt
@@ -69,7 +70,6 @@ head -n 25 04_snpEff/SNP_annotated_formatted.txt
 tail 04_snpEff/SNP_annotated_formatted.txt
 ```
 This is what it looks like:
-
 ```bash
 #CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT
 Chr1    53559   49:9:-  C       G       .       PASS    ANN=G   upstream_gene_variant
@@ -95,7 +95,7 @@ less -S 05_bed/genome_mallotus_dummy_annotation_simplified.bed
 ```
 (`q` to exit )
 
-If you remember our outliers files, they were not formatted as `.bed` files. Because our SNP data does not cover all the genome, we want to know which genes are within a window of X kb around the SNP position. The size of this window should ideally be adjusted to the extent of LD decay in your organism (which can be assessed by plotting LD against physical distance in the genome with the output of plink that we generated yesterday, for example). For today, we will choose 10 kb but if you are curious you can explore different sizes.
+If you remember our outliers files, they were not formatted as `.bed` files. Because our SNP data does not cover all the genome, we want to know which genes are within a window of X Kb around the SNP position. The size of this window should ideally be adjusted to the extent of LD decay in your organism (which can be assessed by plotting LD against physical distance in the genome with the output of plink that we generated yesterday, for example). For today, we will choose 10 Kb but if you are curious you can explore different sizes.
 To prepare the files, we will use R. 
 
 ### In R (in a R terminal on the server)
@@ -117,7 +117,7 @@ window <- 10000
 outlier_temp_rda$start <- outlier_temp_rda$position - (window / 2)
 
 # start position can't be negative! replace negative by 0
-outlier_temp_rda$start[outlier_temp_rda$start < 0] <- 0 
+outlier_temp_rda$start[outlier_temp_rda$start < 0] <- 0
 
 # add a vector with stop position
 outlier_temp_rda$stop <- outlier_temp_rda$position + (window / 2)
@@ -125,7 +125,7 @@ outlier_temp_rda$stop <- outlier_temp_rda$position + (window / 2)
 # have a look
 head(outlier_temp_rda)
 
-# which columns shoud we keep?
+# which columns should we keep?
 outlier_temp_rda_bed <- outlier_temp_rda[, c(2, 5, 6, 1)]
 
 # save your file
@@ -151,15 +151,15 @@ write.table(all_snps_bed, "05_bed/all_snps.bed", row.names = FALSE, sep = "\t", 
 If you have time, you can do the same for the outliers from BayPass, or the outliers of divergence on chromosome 4 or chromosome 5.
 
 ### On the server (quit R with the command q() or quit() )
-If you made the `.bed` files in Rstudio, please copy back your formatted outliers and SNP `.bed` files into the `05_day5/05_bed` folder on the server. 
-We will now run Bedtools. The command `intersect` will look for overlap between the file given with `-a`, and the file given with `-b`, the argument `-wb` will print the information coming from the annotation file (gene names, gene ontology, uniprot ID, etc). 
+If you made the `.bed` files in Rstudio (on your local computer), please copy back your formatted outliers and SNP `.bed` files into the `05_day5/05_bed` folder on the server. 
+
+We will now run bedtools. The command `intersect` will look for overlap between the file given with `-a`, and the file given with `-b`, the argument `-wb` will print the information coming from the annotation file (gene names, gene ontology, uniprot ID, etc). 
 The command `>` redirects the output into the file of your choice.
 
 With the command `wc -l` we will count the lines to see how many transcripts intersect with the outlier SNPs.
 
 ```bash
-# find the intersection between the genomic location of outlier regions and the location of 
-transcripts
+# find the intersection between the genomic location of outlier regions and the location of transcripts
 bedtools intersect -a 05_bed/outlier_temp_rda.bed -b 05_bed/genome_mallotus_dummy_annotation_simplified.bed -wb > 05_bed/outlier_temp_rda.intersect
 
 cat 05_bed/outlier_temp_rda.intersect | wc -l
@@ -173,8 +173,7 @@ cat 05_bed/outlier_temp_rda.intersect | cut -f 8 > 06_go/outlier_temp_rda.transc
 head 06_go/outlier_temp_rda.transcript
 ```
 
-We repeat the analyses for the set of all SNPs:
-
+Let's repeat the analyses for the set of all SNPs:
 ```bash
 bedtools intersect -a 05_bed/all_snps.bed -b 05_bed/genome_mallotus_dummy_annotation_simplified.bed -wb > 05_bed/all_snps.intersect
 
@@ -182,7 +181,6 @@ cat 05_bed/all_snps.intersect | wc -l
 cat 05_bed/all_snps.intersect | cut -f 8 > 06_go/all_snps.transcript
 head 06_go/all_snps.transcript
 ```
-
 You may now repeat the commands for other outliers files if you wish.
 
 ### Have a look at your results
@@ -194,11 +192,11 @@ For information about proteins, you can look at https://www.uniprot.org/
 
 ## 5-3. Gene ontology enrichment analysis with goseq
 
-**OBS! Gene enrichment analysis is mostly designed for RNAseq or whole-genome analyses in which all genes are analyzed. The next steps use our RAD-seq data just for instructional purposes and such that you can replicate the analysis with your whole-genome data, if you have it.**
+>OBS! Gene enrichment analysis is mostly designed for RNAseq or whole-genome analyses in which all genes are analyzed. The next steps use our RAD-seq data just for instructional purposes and such that you can replicate the analysis with your whole-genome data, if you have it.
 
 Note: This script was built with the help or Dr. E. Berdan (U. Stockholm).
 
-This part will only be in Rstudio on your computer.
+This part will be done in Rstudio on your computer.
 Please copy *the whole folder `05_day5`* to your local computer, set your working directory in Rstudio to `05_day5`, and load the required package:
 ```R
 # load package
@@ -212,6 +210,7 @@ We have prepared a simplified annotation of the transcripts, and removed duplica
 ```R
 transcript_info = read.table("06_go/transcript_go_simplified.txt", header = TRUE, stringsAsFactors = FALSE, sep = "\t")
 head(transcript_info)
+
 row.names(transcript_info) <- transcript_info$TranscriptName
 ```
 As you see, GO terms are side-by-side, which will not be super helpful to make a table with transcripts <-> GO.
@@ -229,12 +228,12 @@ head(go_split[, 1:10])
 ```
 
 ```R
-# install packages
+# load packages
 library(data.table)
 library(dplyr)
 
 # linearize the matrix
-terms = colnames(select(go_split, contains("GeneGo")))
+terms = colnames(dplyr::select(go_split, contains("GeneGo")))
 
 # transform table into a long format
 go_long = melt(go_split, measure.vars = terms, id.vars = "contig", na.rm = TRUE)
@@ -249,8 +248,9 @@ head(go_ready)
 First, we need to know which genes are nearby a SNP covered by a RAD locus. This will be a subset of all the genes present in the transcriptome/genome since we did a reduced-representation sequencing. This may also happen for a whole genome if, because of coverage or filtering we have genes not covered by SNPs.
 
 ```R
-# upload transcript intersecting with snps
+# upload transcript intersecting with SNPs
 all_transcripts <- read.table("06_go/all_snps.transcript", header = FALSE)
+
 colnames(all_transcripts)[1] <- "TranscriptName"
 dim(all_transcripts) # how many?
 head(all_transcripts)
@@ -283,8 +283,7 @@ row.names(all_transcripts_unique) <- all_transcripts_unique$TranscriptName
 head(all_transcripts_unique)
 ```
 
-Let's open one of our outlier list and format it. We will start with the outliers from the associations with temperature found by the RDA.
-
+Let's open one of our outlier list and format it. We will start with the outliers from the associations with temperature found by the RDA:
 ```R
 # transcripts in outliers
 outliers_transcripts_temp_rda <- read.table("06_go/outlier_temp_rda.transcript", header = FALSE)
@@ -299,8 +298,7 @@ all_transcripts_unique$outliers_temp_rda <- as.numeric(all_transcripts_unique$Tr
 head(all_transcripts_unique)
 ```
 
-Now we run the goseq function `nullp()` to prepare the data and integrate gene length bias. This function requires vectors as input, so we will convert the data in data.frames to vectors.
-
+Now we run the goseq function `nullp()` to prepare the data and integrate gene length bias. This function requires vectors as input, so we will convert the data in data.frames to vectors:
 ```R
 # all genes:
 measured_genes = as.vector(all_transcripts_unique$TranscriptName)
@@ -312,16 +310,16 @@ outliers_genes = as.vector(all_transcripts_unique$outliers_temp_rda)
 length = as.vector(all_transcripts_unique$length)
 
 # run nullp()
-pwf_outliers = nullp(outliers_genes, bias.data = length)
+pwf_outliers = goseq::nullp(outliers_genes, bias.data = length)
 row.names(pwf_outliers) <- row.names(all_transcripts_unique)
 
-#check output
+# check output
 head(pwf_outliers)
 ```
 Great! We have formatted all the files. Let's now test enrichment using our database (transcript/GO) named "go_ready" and the prepared list of genes with 0/1 info for our outliers from temperature association with RDA:
 ```R
 # check for enrichment with goseq.
-enrich_outliers = goseq(pwf_outliers, gene2cat = go_ready, use_genes_without_cat = TRUE)
+enrich_outliers = goseq::goseq(pwf_outliers, gene2cat = go_ready, use_genes_without_cat = TRUE)
 
 # check output
 head(enrich_outliers)
@@ -348,4 +346,4 @@ enrich_outliers[which(enrich_outliers$over_represented_padjust < 0.10), ]
 What do you think? Sometimes it may be significant but when one has low numbers (1 gene out of 4), is this really interpretable? 
 Anyhow, you know how to do it! :) 
 
-If you wish, you can repeat the analysis on the outliers from BayPass, or joined BP/rda, or on the outliers of divergence found on chr4 and chr5. 
+If you wish, you can repeat the analysis on the outliers from BayPass, or joined BP/rda, or on the outliers of divergence found on Chr4 and Chr5. 
