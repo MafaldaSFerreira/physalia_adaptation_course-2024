@@ -1,4 +1,4 @@
-# Day 4. Tutorial on SVs <!-- omit from toc -->
+# Day 4. Tutorial on SVs (Optional) <!-- omit from toc -->
 
 ## Table of contents <!-- omit from toc -->
 - [4-2. Structural Variant (SV) calling from whole genome resequencing data](#4-2-structural-variant-sv-calling-from-whole-genome-resequencing-data)
@@ -6,6 +6,8 @@
     - [VCF filtering and splitting](#vcf-filtering-and-splitting)
     - [PCA to compare patterns from different types of genetic variation](#pca-to-compare-patterns-from-different-types-of-genetic-variation)
 
+
+**Note: This practical has been part of the course in previous editions. Although we will not cover it this year, We leave it here in case you would like to follow the pipeline and apply it on your own datasets.**
 
 # 4-2. Structural Variant (SV) calling from whole genome resequencing data
 Today we have explored the importance of structural variants in ecology and evolution, and you have tested different approaches to investigate haploblocks on genomic data, RADseq in this case. However, explicitely testing for the presence of SVs associated with haploblocks is not really possible with RADseq data (but see Yann's paper on detecting CNVs from RADseq data; [Dorant et al. 2020, Molecular Ecology](https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.15565)), so we'll now use whole genome resequencing data (Illumina short reads) from a few capelin samples. From these data, we can call both SNPs (sequence variation - done on Monday) and SVs (structural variation) and test whether the two provide concordant patterns of variation and differentiation, or not.
@@ -32,7 +34,6 @@ bcftools merge -m id -O b -o merged.bcf s1.geno.bcf s2.geno.bcf ... sN.geno.bcf
 
 # apply the germline SV filter which requires at least 20 unrelated samples
 delly filter -f germline -o germline.bcf merged.bcf
-
 ```
 However, in our case, we have low-coverage whole genome resequencing data from only 12 individuals, so we can call SVs directly from all the samples combined and forego the filtering step. Keep in mind that this is just a toy dataset, and the quality of these SV calls may not be very high.
 
@@ -62,7 +63,6 @@ POR19_1.trimmed.sorted.reheader.bam
 # convert file from *.bcf to *.vcf
 cd svs_delly
 bcftools convert -O v -o capelin_sv.vcf capelin_sv.bcf
-
 ```
 To copy the VCF file containing all the SVs into `~/wgr/svs_delly` use:
 ```bash
@@ -77,7 +77,6 @@ cp ~/Share/WGS_bam/svs_delly/capelin_sv.vcf ~/wgr/svs_delly/.
 
 # copy also the popmap file
 cp ~/Share/WGS_bam/svs_delly/popmap_capelin_wgr_delly.txt ~/wgr/svs_delly/.
-
 ```
 
 ### VCF filtering and splitting
@@ -87,7 +86,6 @@ vcftools --vcf capelin_sv.vcf \
     --max-missing 0.7 \
     --recode \
     --stdout > capelin_sv_filtered.vcf
-
 ```
 Then, we can split the VCF file by SV type (or extract one particular SV type of interest with this script
 ```bash
@@ -110,7 +108,6 @@ grep "#" capelin_sv_filtered.vcf > capelin_sv_bnd.vcf && grep "SVTYPE=BND" capel
 ... and count the number of SV identified, overall or for each type with:
 ```bash
 grep -v "#" capelin_sv_ins.vcf | wc -l
-
 ```
 What is the most abundant SV type?
 
@@ -125,7 +122,6 @@ vcftools --vcf capelin_sv_del.vcf --012 --out capelin_sv_del
 vcftools --vcf capelin_sv_inv.vcf --012 --out capelin_sv_inv
 vcftools --vcf capelin_sv_dup.vcf --012 --out capelin_sv_dup
 vcftools --vcf capelin_sv_bnd.vcf --012 --out capelin_sv_bnd
-
 ```
 Download the resulting files on your computer.
 
@@ -193,7 +189,6 @@ cp ~/Share/WGS_bam/snps_bcftools/capelin_wgs_filtered.vcf ~/wgr/snps_bcftools/.
 cp ~/Share/WGS_bam/snps_bcftools/capelin_wgs_filtered.012 ~/wgr/snps_bcftools/.
 
 cp ~/Share/WGS_bam/snps_bcftools/capelin_wgs_filtered.012* ~/wgr/snps_bcftools/.
-
 ```
 Now you can do the PCA as above. 
 Do you see the same patterns from each type of variant? Let's discuss.

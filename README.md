@@ -50,7 +50,7 @@ A prerequisite of the course is that you are familiar with [Unix](https://en.wik
 Below you can find the proposed schedule for the week. We will maintain some flexibility in the schedule to allow enough time for questions and discussions.
 >UPDATE FIGURE
 
-![schedule](images/schedule.png)
+![schedule](images/schedule_2024.png)
 
 ### Log in to the AWS server from your computer
 Please follow the [instructions shared by Carlo](Connection_to_the_Amazon_EC2_service_2024.pdf).

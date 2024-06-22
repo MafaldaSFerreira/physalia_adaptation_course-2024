@@ -41,11 +41,13 @@ We will skip the preparation of the file and the 1st steps of lostruct to read a
 
 [Link to preliminary steps in_lostruct](~/04_day4/01_haploblocks/Step0_file_preparation.md)
 
-Briefly, this analysis is more powerful if we keep all SNPs, including those in LD, so we will use the unfiltered VCF (before we even selected one random SNP per RAD locus) for the 12 canadian populations. We convert this file into BCF format. Then we use a function in lostruct to make windows of your chosen size. We suggest to use window of 100 SNPs since coverage of the genome is low (RAD data) and we don't have a lot of SNPs. Typically, with whole genome data you may first run windows of 1000 or 5000 SNPs for a first look, and then refine the analysis with smaller windows. The analysis can be run chromosome by chromosome (as in the paper) or on the entire genome. Here, we are going for the entire genome.
+__Tips on preparing an input file for this analysis:__ This analysis would be more powerful if we kept all SNPs, including those in LD. We use a bcf file as input for lostruct to make windows of your chosen size. We suggest to use window of 100 SNPs since coverage of the genome is low (RAD data) and we don't have a lot of SNPs. Typically, with whole genome data you may first run windows of 1000 or 5000 SNPs for a first look, and then refine the analysis with smaller windows. The analysis can be run chromosome by chromosome (as in the paper) or on the entire genome. Here, we are going for the entire genome.
+
+With our example VCF, we will use 5 SNPs per window.
 
 Then, lostruct runs the PCAs on each window. Here we choose to retain the first 2 PC (Principal Components: k = npc = 2) because they usually capture the most variance for each local PCA.
 
-The output consists of a matrix in which each row gives the first k eigenvalues and k eigenvectors for each window. This gives you a matrix with 483 columns (3 columns of info, 240 columns with PC1 score for each individual, and 240 column with PC2 score for each individual). The matrix consists of as many rows as windows (1016 with windows of 100 SNPs). We added 3 columns of information about the window position. You can have a look at it with `less -S 00_localPCA/pca_matrix.txt` (escape `less` by pressing `q`).
+The output consists of a matrix in which each row gives the first k eigenvalues and k eigenvectors for each window. This gives you a matrix with 483 columns (3 columns of info, 240 columns with PC1 score for each individual, and 240 column with PC2 score for each individual). The matrix consists of as many rows as windows (280 with windows of 5 SNPs). We added 3 columns of information about the window position. You can have a look at it with `less -S 00_localPCA/pca_matrix.txt` (escape `less` by pressing `q`).
 
 #### Run lostruct (on the server)
 We will run the final steps of the lostruct approach. You can do it either on the Terminal (start R) or in RStudio on your computer:
@@ -154,7 +156,6 @@ ggplot(pca_correlation, aes(x = midpos, y = corr_vector, colour = chrom)) +
   geom_point() +
   theme_classic() +
   facet_grid(cols = vars(chrom), scales = "free_x", space = "free_x")
-
 ```
 >What do you see? Which windows correlate with PC1? What do you interpret from this?
 
@@ -183,7 +184,6 @@ ggplot(mds_matrix, aes(x = mds1, y = mds2, colour = chrom)) +
 ggplot(mds_matrix, aes(x = mds3, y = mds4, colour = chrom)) +
   geom_point() +
   theme_classic()
-
 ```
 This is the output for MDS1 vs MDS2:
 ![mds1_2](00_localPCA/images/mds1_2.png)
@@ -206,7 +206,6 @@ ggplot(mds_matrix, aes(x = midpos, y = mds2, colour = chrom)) +
   geom_point() +
   theme_classic() +
   facet_grid(cols = vars(chrom), scales = "free_x", space = "free_x")
-
 ```
 
 This is the output for MDS2:
@@ -329,7 +328,7 @@ ggplot(chr4.ld, aes(x = BP_A, y = BP_B, col = R2)) + theme_classic() +
 >Do you observe the particular LD pattern of an inversion (or a non-recombining block)? 
 >When do you observe the signal, when considering all individuals together, or when considering LD for AA individuals only? Why? Is this pattern also observed in the BB group?
 
-### Studying differentiation with F<sub>ST</sub> (optional)
+### Studying differentiation with F<sub>ST</sub>
 We may be interested in calculating several statistics for each haplogroup (diversity, differentiation, etc). For instance we can calculate F<sub>ST</sub> between our groups, as you learnt to do on Day 2 with VCFtools, both as an overall F<sub>ST</sub> value and in sliding-windows along the genome. *Note that here this is not ideal since it is better to have balanced sample size (and our group BB is pretty small).*
 
 If you are interested in performing such an analysis, you can learn the details on how to do so by following this optional tutorial:
@@ -347,7 +346,7 @@ Try to plot also the AA vs. AB, and AB vs. BB contrasts:
 ![fst_AB_BB](06_images/Fst_ABvsBB.png)
 
 
-### (Optional) Studying heterozygosity with the % of heterozygotes in each genotype group
+### Studying heterozygosity with the % of heterozygotes in each genotype group
 A typical signature of inversions or regions of supressed recombination is elevated heterozygosity among putative heterozygote individuals. We can test this by calculating heterozygosity within the AB group. We will use the `--hardy` options for VCFtools which tests [Hardy-Weinberg equilibrium](https://en.wikipedia.org/wiki/Hardy%E2%80%93Weinberg_principle) for each SNP and report the observed and expected fraction of heterozygotes at each position.
 
 You can follow the tutorial to do so here:
