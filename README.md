@@ -22,15 +22,13 @@ All tutorials (except for day 1) can be completed using the files provided in th
   - [Day 4: Accounting for Structural Variants](#day-4-accounting-for-structural-variants)
   - [Day 5: Functional approaches](#day-5-functional-approaches)
   - [Additional resources](#additional-resources)
-    - [Cheat sheet of bash commands](#cheat-sheet-of-bash-commands)
-    - [Cheat sheet of R commands](#cheat-sheet-of-r-commands)
 
 
 ## Before the course
 
 ### Install required software
 
-Most exercises will be run using the cloud compute service [AWS](https://aws.amazon.com/), and others will be run on your local computer. Thus, please make sure you have installed on your computer the software listed below before the course begins:
+Some exercises will be run using the cloud compute service [AWS](https://aws.amazon.com/) ("on the server"), and others will be run on your local computer. Thus, please make sure you have installed on your computer the software listed below before the course begins:
 
 - [R](https://www.r-project.org)
 - [RStudio](https://posit.co/download/rstudio-desktop/)
@@ -48,7 +46,6 @@ A prerequisite of the course is that you are familiar with [Unix](https://en.wik
 ## During the course
 ### Schedule
 Below you can find the proposed schedule for the week. We will maintain some flexibility in the schedule to allow enough time for questions and discussions.
->UPDATE FIGURE
 
 ![schedule](images/schedule_2024.png)
 
@@ -96,23 +93,16 @@ Please follow the [instructions shared by Carlo](Connection_to_the_Amazon_EC2_se
 3-3: Genotype-Environnement Associations with two methods (Baypass & Redundancy Analysis)
 
 ### Day 4: Accounting for Structural Variants
->TO UPDATE?
 
 - **Data**: We focus on 12 population from Canada. We recommend that you pick one of the two tutorials (haploblocks by local PCA or CNVs from RAD-seq data)
 
 4-1: Investigating haplotypes blocks (~inversions?)
 
-This tutorial include working on local PCA, but also calculation of LD, Fst and observed fraction of heterozygotes which may be useful in other contexts
-
-4-2: Filtering duplicated loci in RAD-seq data (~ Copy Number Variants, CNVs)
-
-This tutorial show how to filter RAD loci to exclude duplicated ones (keep a reliable dataset for SNP analysis), and then how to analyse the duplicated loci for environmental associations.
-
-4-3: Detecting SV with Delly ??
+This tutorial include working on local PCA, but also calculation of LD, F<sub>ST</sub> and observed fraction of heterozygotes which may be useful in other contexts
 
 ### Day 5: Functional approaches
 
-5-1: SNPeff annotation of SNPs for coding & regulatory regions
+5-1: SNPeff annotation of SNPs for coding and regulatory regions
 
 5-2: Intersection between SNPs and genes with bedtools
 
@@ -122,10 +112,6 @@ This tutorial show how to filter RAD loci to exclude duplicated ones (keep a rel
 
 ### Additional resources
 
-#### Cheat sheet of bash commands
-> TO UPDATE! Blurry image
-![cheatsheet](images/bash_cheatsheet.png)
+[Cheat sheet of basic bash commands](00_before_the_course/Unix_command_cheatsheet.pdf).
 
-#### Cheat sheet of R commands
-
-> TO BE ADDED
+[Cheat sheet of basic R commands](00_before_the_course/base-r-cheat-sheet.pdf).

@@ -15,11 +15,11 @@
 
 
 ## 1-1. Getting familiar with the Unix environment
-While we assume that you are comfortable working with the command line and under the Unix environment, we will refresh some of the most common commands that we will use during the tutorials. 
+While we assume that you are comfortable working with the command line in the Unix environment, we will refresh some of the most common commands that we will use during the tutorials. 
 
 When you log in to the AWS server, you are positioned in the home directory. You can easily return to the home directory whenever you want by typing `cd` and pressing the `Enter/Return` key.
 
-Let's start by creating a new directory called `scripts` within the home directory, and copy there using `cp` some files we will need later:
+With the command `mkdir`, let's start by creating a new directory called `scripts` within the home directory, and using `cp`, copy there some files we will need later:
 ```bash
 # make sure you are in the home directory
 cd
@@ -27,15 +27,21 @@ cd
 mkdir scripts
 # go to the new directory
 cd scripts
-# copy all the files (*) within the 00_documents/ directory (from the Share directory) into the directory you are currently in
+# copy all the files (represented by an *, also known as wildcard) from the source directory to the destination directory (in this case, the one you are currently in, which is denoted with a .)
 cp -r ~/Share/physalia_adaptation_course/00_documents/* .
-# copy the 01_day1/01_scripts/ directory and its content (-r to refer to directory) into the directory you are currently in
+# copy recursively the 01_day1/01_scripts/ directory and its content (denoted with the flag -r) into the directory you are currently in
 cp -r ~/Share/physalia_adaptation_course/01_day1/01_scripts .
 
 ```
->Note that in this code block some lines start with a hash (#) symbol. The hash causes these lines to be ignored (not executed) and allows us to add comments to our code. Commenting your code is a very good practice that helps everyone, not just you, understand what it does, making easier to reuse the code in the future! 
+>When in doubt of what a command does and which options it offers, use `man` followed by the name of the command, e.g., `man cp`.
 
-You can use `ls` to list the directories and files in the current directory. For a nicer display of the hierarchical structure of the content of the current directory, you can use `tree .`.
+>Note that in the previous code block some lines start with a hash (#) symbol. The hash causes these lines are ignored (not executed), which allows us to add comments to our code. Commenting your code is a very good practice that helps everyone, not just you, understand what it does. This makes easier to reuse the code and reproduce the same results in the future!
+
+You can use `ls` to list the content of a directory. For a tree-like display of the hierarchical structure of the content of a directory, you can use `tree`, e.g., try `tree /home/ubuntu/Share/physalia_adaptation_course/`. Here you can see all the material available for the course. If you only want to visualize the directories (skip the files) within the target directory, you can use `tree -d /home/ubuntu/Share/physalia_adaptation_course/`.
+
+>Note that the directories and sub-directories are organized by day and topic, and have a similar naming pattern starting with a number. This is our strategy to provide a logical structure to our directories, improving navigation and searchability. It is important that you develop your own organizational strategy and stick to it throughout your data analysis!
+
+>Also note that each main directory has a README file. Same as documenting our code, it is important to document the content of a directory.
 
 Next, explore some files using the `less` command. Note that when using `less`, you can scroll-down by pressing the Space bar on your keyboard, and exit `less` with `q`:
 ```bash
@@ -54,9 +60,11 @@ head popmap_2lin_day1.txt
 ```
 The `head` command prints the first 10 lines by default. You can specify the number of lines you want with the flag `-n` followed by the number of lines, e.g. `-n 25`. Same for `tail`, which shows the last 10 lines of a file.
 
-If you want to print an entire file on the screen (the standard output in this case) then use `cat`, and the equivalent command for compressed files is `zcat`, e.g. `zcat -n 1 ~/Share/physalia_adaptation_course/01_day1/02_genome/genome_mallotus_dummy.fasta.gz`. 
+If you want to print an entire file to the screen (the standard output in this case) you can use `cat`. The equivalent command for compressed files is `zcat`, e.g. `zcat ~/Share/physalia_adaptation_course/04_day4/01_haploblocks/02_data/canada.vcf.gz | less`. 
 
-Make a copy of a file and assign a different name:
+Note that here we added a pipe `|` and `less` to limit the display; otherwise the entire file would be printed on the screen! Using the pipe sign `|`, we pass the output of the first command into the second command. As you might infer, using `cat` for large files is inconvenient and it could freeze your Terminal window. Since `less`, `head` or `tail`, offer more control over what is displayed on the screen, it would sometimes be preferable.
+
+Now make a copy of a file and give it a different name:
 ```bash
 cp popmap_2lin_day1.txt test_popmap.txt
 ```
@@ -64,7 +72,7 @@ To edit a file, we will use the text editor called `nano`:
 ```bash
 nano test_popmap.txt
 ``` 
-To navigate through the lines of the file use the arrows on your keyboard. At the bottom of the screen there are shortcuts for different actions. 
+To navigate through the lines of the file, use the arrows on your keyboard. At the bottom of the screen there are shortcuts for different actions. 
 
 For example, to modify the file and save it with a different name, write something in the first line, press the `Ctlr` and `o` keys (equivalent to `Ctlr + o`), type the new file name (`test_nano.txt`), press `Enter` and `y` to save the file under a different name. To exit nano, press `Ctlr + x`. 
 
@@ -164,7 +172,6 @@ conda activate adaptg
 # run samtools to explore the bam file
 samtools view -h BEL-B_12.sorted.bam | less 
 ```
-With the pipe sign `|`, we pass the output of the first command into the second command.
 The first few lines starting with `@` correspond to the header. If you have a lot of scaffolds in your reference genome, the header could be very long. If you want to see the first few alignments, remove `-h` from the command above.
 
 (exit `less` by pressing `q`).
