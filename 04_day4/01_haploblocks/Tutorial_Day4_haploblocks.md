@@ -47,7 +47,7 @@ With our example VCF, we will use 5 SNPs per window.
 
 Then, lostruct runs the PCAs on each window. Here we choose to retain the first 2 PC (Principal Components: k = npc = 2) because they usually capture the most variance for each local PCA.
 
-The output consists of a matrix in which each row gives the first k eigenvalues and k eigenvectors for each window. This gives you a matrix with 483 columns (3 columns of info, 240 columns with PC1 score for each individual, and 240 column with PC2 score for each individual). The matrix consists of as many rows as windows (280 with windows of 5 SNPs). We added 3 columns of information about the window position. You can have a look at it with `less -S 00_localPCA/pca_matrix.txt` (escape `less` by pressing `q`).
+The output consists of a matrix in which each row gives the first k eigenvalues and k eigenvectors for each window. This gives you a matrix with 483 columns (3 columns of info, 240 columns with PC1 score for each individual, and 240 column with PC2 score for each individual). The matrix consists of as many rows as windows (223 with windows of 5 SNPs). We added 3 columns of information about the window position. You can have a look at it with `less -S 00_localPCA/pca_matrix.txt` (escape `less` by pressing `q`).
 
 #### Run lostruct (on the server)
 We will run the final steps of the lostruct approach. You can do it either on the Terminal (start R) or in RStudio on your computer:

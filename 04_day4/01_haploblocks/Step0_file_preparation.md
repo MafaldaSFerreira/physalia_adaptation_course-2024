@@ -46,7 +46,7 @@ dim(pcs) # check dimension
 head (pcs[, 1:10]) # look at the first 10 columns
 pcs_noNA <- pcs[-which(is.na(pcs[, 1])), ] # because of NA, some windows were not computed by pca. we will remove them
 ```
-In the matrix pcs, each rows give the first k eigenvalues and k eigenvectors for each window. This gives you a matrix with 483 columns (3 columns of info, 240 columns with PC1 score for each individual, and 240 column with PC2 score for each individual). It has as many rows as windows (280 with windows of 5 SNPs)
+In the matrix pcs, each rows give the first k eigenvalues and k eigenvectors for each window. This gives you a matrix with 483 columns (3 columns of info, 240 columns with PC1 score for each individual, and 240 column with PC2 score for each individual). It has as many rows as windows (223 with windows of 5 SNPs)
 
 As you see we don't know the position of each window, we will get it with the function regions, remove the NA windows and exapnd the pca matrix to include the position information we retrieve before and export the file
 ```R
