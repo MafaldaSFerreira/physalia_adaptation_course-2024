@@ -64,7 +64,7 @@ Please follow the [instructions shared by Carlo](Connection_to_the_Amazon_EC2_se
 - **Genome assembly**: For this course, we generated a dummy assembly of about 90 MB (instead of about 500 MB) and 5 chromosomes (instead of 24) to expedite analysis running time.
 
 - **Raw data**: Data were generated using a reduced-representation approach (GBS/RADseq) and sequenced with IonTorrent. 
->Note that the analyses we will learn during the course are scalable to whole genome resequencing data or other type of genomic data.
+>OBS! The analyses we will learn during the course are scalable to whole genome resequencing data or other type of genomic data.
 
 1-1: Getting familiar with Unix environment
 
@@ -88,7 +88,7 @@ Please follow the [instructions shared by Carlo](Connection_to_the_Amazon_EC2_se
 
 3-1: Genetic structure and LD-pruning
 
-3-2: Outlier of differentiation with two methods (Outflank & Baypass)
+3-2: Outlier of differentiation with two methods (Outflank & BayPass)
 
 3-3: Genotype-Environnement Associations with two methods (Baypass & Redundancy Analysis)
 
@@ -102,7 +102,7 @@ This tutorial include working on local PCA, but also calculation of LD, F<sub>ST
 
 ### Day 5: Functional approaches
 
-5-1: SNPeff annotation of SNPs for coding and regulatory regions
+5-1: SnpEff annotation of SNPs for coding and regulatory regions
 
 5-2: Intersection between SNPs and genes with bedtools
 
@@ -112,6 +112,6 @@ This tutorial include working on local PCA, but also calculation of LD, F<sub>ST
 
 ### Additional resources
 
-[Cheat sheet of basic bash commands](00_before_the_course/Unix_command_cheatsheet.pdf).
+[Cheat sheet of basic Unix commands](00_before_the_course/Unix_command_cheatsheet.pdf).
 
 [Cheat sheet of basic R commands](00_before_the_course/base-r-cheat-sheet.pdf).

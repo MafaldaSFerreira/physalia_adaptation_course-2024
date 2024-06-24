@@ -23,7 +23,7 @@
 # Tutorial 1
 
 ## 2-1. Calculating F-statistics
-In the server, let's make a copy of the folder of **day 2** and work within it. 
+On the server, let's make a copy of the folder of **day 2** and work within it. 
 
 The folder contains files equivalent to those you produced yesterday with Stacks, except that they are compressed to fit on GitHub. 
 
@@ -160,7 +160,7 @@ Once this is done, you will see via the Terminal, using `ls pca` (for listing al
 
 In this folder we also have all the information about individuals. To explore the pca results, let's make a copy of the `pca/` folder from the server to your local computer. Download the six files that are inside the folder `~/02-day2/pca/`.
 
-We will now work in RStudio using `02_day2` as working directory (you can confirm this by using `getwd()`, or assign the working directory using `setwd()`).
+On your local computer, let's work in RStudio using `02_day2` as working directory (you can confirm this by using `getwd()`, or assign the working directory using `setwd()`).
 
 ### Load the required R packages
 ```R
@@ -317,7 +317,7 @@ A long story short, what drives PC1 is likely a chromosomal rearrangement that w
 # Tutorial 2
 
 ## 2-3. Population structure with LEA
-Here, we will investigate population structure using LEA. Briefly, LEA is an R package developed by Eric Frichot and Olivier Fraņcois (Grenoble University, France), which is dedicated to landscape genomics and ecological association tests. This package includes many tools such as missing data imputation, genome scans for selection, testing for association between genotypes and environment, and analyses of population structure. Here, we only test the population structure approach, which is very easy to implement. If you want to learn more about LEA, you feel free to visit the R vignette at https://www.bioconductor.org/packages/devel/bioc/vignettes/LEA/inst/doc/LEA.pdf.
+Here, we will investigate population structure using LEA. Briefly, LEA is an R package developed by Eric Frichot and Olivier Fraņcois (Grenoble University, France), which is dedicated to landscape genomics and ecological association tests. This package includes many tools such as missing data imputation, genome scans for selection, testing for association between genotypes and environment, and analyses of population structure. Here, we only test the population structure approach, which is very easy to implement. If you want to learn more about LEA, feel free to visit its [R vignette](https://www.bioconductor.org/packages/devel/bioc/vignettes/LEA/inst/doc/LEA.pdf).
 
 Here, we will screen for population structure among populations of two datasets, the `population_2lin_random.vcf` and the `population_canada_random.vcf` files.
 
@@ -377,7 +377,7 @@ Well done!
 ## 2-4. Population structure with Discriminant Analysis of Principal Components (DAPC)
 A Discriminant Analysis of Principal Components (DAPC) is a multivariate approach that merges a Principal Component Analysis (PCA) and a Discriminant Analysis (DA). A PCA aims to summarize the variation among individuals and it runs very fast, also on large datasets. However, it is not powerful at discriminating groups because it doesn't use any a priori information on grouping, and intra-group variation can overwhelm inter-group variation. A DA, on the other hand, tries to summarize the variation among groups, while minimizing the variation within groups. Thus, a DAPC takes the best of the two analyses to describe population structure. Also, compared to structure-like analysis it is not based on strict model assumptions and it is more powerful at describing isolation-by-distance and hierarchical structure than the Bayesian approaches implemented in STRUCTRURE, fastSTRUCTURE, or ADMIXTURE.
 
-In R studio, still with `02-day2` as working directory, we will use the R package [adegenet](https://adegenet.r-forge.r-project.org) to do a DAPC.
+On your local computer, in RStudio we will use the R package [adegenet](https://adegenet.r-forge.r-project.org) to do a DAPC (still with `02-day2` as working directory).
 
 Adegenet can use as input file the one produced by Stacks with `*.structure` extension. However, it is necessary to rename the extension from `.structure` to `.str`, but here we already did that for you.
 
@@ -468,4 +468,4 @@ compoplot(dapc_canada3)
 
 Although 200 PCs discriminate populations well, we know from low pairwise population F<sub>ST</sub> that differentiation is very low, which lead us to conclude that these high population assignments are the consequence of data over-fitting. On the other hand, the poor population assignemnt you obtain from 50 PCs is indicative of the weak population structure among the Canadian populations.
 
-You can change pretty much everything in your plot and the authors of adegenet have put together a great tutorial <https://adegenet.r-forge.r-project.org/files/tutorial-dapc.pdf>.
+You can change pretty much everything in your plot and the authors of adegenet have put together a great [tutorial](https://adegenet.r-forge.r-project.org/files/tutorial-dapc.pdf).

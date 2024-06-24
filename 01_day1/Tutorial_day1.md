@@ -156,9 +156,12 @@ As we are analyzing a large read dataset that could take several hours to align 
 
 Now, go to your home directory, make a new directory for the alignment files and create a symbolic link to the [BAM](https://samtools.github.io/hts-specs/SAMv1.pdf) files stored in the `~/Share` directory. With a symbolic link, you add the files to a path of your choice, but because they are not physically there you are not using up storage space.
 ```bash
-cd 
+cd
+
 mkdir bamfiles
+
 cd bamfiles
+
 ln -s ~/Share/bamfiles/*.bam .
 
 ```
@@ -166,8 +169,8 @@ ln -s ~/Share/bamfiles/*.bam .
 #### SAM/BAM
 The alignment file contains much more information than the raw data `*.fastq` files. In addition to all the information contained in the `*.fastq` files, we now have information of the quality of the alignment and the position of where those reads mapped on the genome. Although we produce `*.sam` files with the alignment, we quickly convert them to `*.bam`, which is their binary format. These files are not readable directly but you can use these command to visualize them:
 ```bash
-# activate the conda environment (if not done already)
-conda activate adaptg
+# (if not done already) activate the conda environment
+#conda activate adaptg
 
 # run samtools to explore the bam file
 samtools view -h BEL-B_12.sorted.bam | less 
@@ -201,8 +204,8 @@ Although the modules `gstacks` and `populations` can be run on one go with the `
 
 Please copy the scripts inside your directory and make executable the one we are interested in:
 ```bash
-# activate the conda environment, if not done already
-conda activate adaptg
+# (if not done already) activate the conda environment
+#conda activate adaptg
 
 # come back to your home
 cd 
@@ -226,7 +229,7 @@ less ~/scripts/01_scripts/stacks_gstacks.sh
 Let's have a look at the `stacks_gstacks.sh` script:
 ```bash
 #!/bin/bash
-###stacks_gstacks.sh
+### stacks_gstacks.sh
 cd
 mkdir -p stacks
 cd stacks
@@ -249,9 +252,7 @@ Note that we use `nohup` to send the job to the background. This allow us to hav
 
 When the job starts, you can check how it is going from the `gstacks.log` file (using `cat`, `less`, `more`, etc.)
 
->Note Model: marukilow (var_alpha: 0.01, gt_alpha: 0.05)
-
-For most datasets, the authors recommend the default *marukilow* model, as it takes a Bayesian approach (incorporating information about allele frequencies of the population at each site) and works quite well. 
+Note Model: marukilow (var_alpha: 0.01, gt_alpha: 0.05). For most datasets, the authors recommend the default *marukilow* model, as it takes a Bayesian approach (incorporating information about allele frequencies of the population at each site) and works quite well. 
 
 The *marukihigh* model can call more than two alleles per site, but it does not use a Bayesian approach. The *snp* model is the model by Hohenlohe and collaborators and it was the default model in Stacks v1. Below is Maruki + Lynch's paper to fully understand these models:
 
@@ -261,6 +262,7 @@ To expedite things (and while the first gstacks script runs), we can focus on a 
 ```bash
 nohup bash ~/scripts/01_scripts/stacks_gstacks_2lin.sh >& gstacks_2lin.log &
 ```
+>Make sure both gstacks runs are complete before proceeding with the following commands (it may take a few minutes). To check the status of the runs, look at the log files (`gstacks.log`, `gstacks_2lin.log`) with `cat`, `less`, `more`, etc. At the bottom, it should say `gstacks is done`.
 
 Once we have our catalog of variants in the `gstacks_2lin` directory, we can run `populations` to apply quality filters and print variant files in different formats. As `populations` is very fast for this small dataset, we can run it from the Terminal. But first, make the directory where you want your results to be saved:
 ```bash
@@ -331,15 +333,20 @@ If you are struggling with this last step, have a look at the solution [here](po
 First, let's set up new folders for these analyses:
 ```bash
 cd
+
 mkdir wgr # for whole genome resequencing data
+
 mkdir wgr/snps_bcftools
+
 ```
 
 ### SNPs calling
 Set symbolic links to the BAM files and their indexes storing aligned reads to reference genome:
 ```bash
 cd wgr
+
 ln -s /home/ubuntu/Share/WGS_bam/*bam* .
+
 # create a list of bam files in a text file
 ls *.bam > bams_list.txt 
 ```
