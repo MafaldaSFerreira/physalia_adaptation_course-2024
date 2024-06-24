@@ -226,15 +226,15 @@ less ~/scripts/01_scripts/stacks_gstacks.sh
 # to exit less, press 'q'
 ```
 
-Let's have a look at the `stacks_gstacks.sh` script:
+Let's have a look at the `stacks_gstacks.sh` script (*don't execute this code block*):
 ```bash
 #!/bin/bash
-### stacks_gstacks.sh
+###stacks_gstacks.sh
 cd
 mkdir -p stacks
 cd stacks
 mkdir -p gstacks
-gstacks -I ~/bamfiles -M ~/scripts/00_documents/popmap_all_day1.txt -O ~/stacks/gstacks -t 3
+gstacks -I ~/bamfiles -M ~/scripts/popmap_all_day1.txt -O ~/stacks/gstacks -t 3
 
 ```
 This is simple and self explanatory: we tell the server that we are writing in bash, create a couple of directories (but only if they are not already present with the `-p` flag) and run `gstacks`.
