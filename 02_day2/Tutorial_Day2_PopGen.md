@@ -9,7 +9,7 @@
     - [Load the required R packages](#load-the-required-r-packages)
     - [Load the input data files](#load-the-input-data-files)
     - [Impute missing data](#impute-missing-data)
-    - [Run and visualise PCA](#run-and-visualise-pca)
+    - [Run and visualize a PCA](#run-and-visualize-a-pca)
     - [Explore PCA loadings](#explore-pca-loadings)
     - [PCA on the Canadian dataset only](#pca-on-the-canadian-dataset-only)
 - [Tutorial 2](#tutorial-2)
@@ -82,11 +82,9 @@ In fact, window estimates are a practical way to summarize data and to reduce th
 
 Now, to visualize the results, we recommend that you download the file from the server to your own computer using [FileZilla](https://filezilla-project.org). It is better to download the whole folder `02-day2`, so that you always work with the same folder/file names and hierarchy as the rest of the group.
 
-On your local computer, in RStudio, set your working directory to the target directory by using `setwd("/path/to/02-day2")`.
+On your local computer, in RStudio, set your working directory to the target directory by using `setwd("/path/to/02-day2")` (replace the part `/path/to/` for the path to this directory on your local computer, e.g., `/Users/angela/Desktop/02_day2/`).
 
-To create a Manhattan plot, there are great packages like [QQMan](https://cran.r-project.org/web/packages/qqman/vignettes/qqman.html) and others.
-
-Or you can also use the R package `ggplot2`:
+To create a Manhattan plot, there are great packages like [qqman](https://cran.r-project.org/web/packages/qqman/vignettes/qqman.html) and others. Or you can also use the R package `ggplot2`:
 ```R
 # load package
 library(ggplot2)
@@ -111,32 +109,32 @@ ggplot(data = Fst, aes(x = midPos / 1000000, y = WEIGHTED_FST, col = CHROM)) +
 
 Back on the server:
 
-We can also calculate π with VCFtools using the command:
+We can also calculate nucleotide diversity (π) with VCFtools using the command:
 ```bash
 vcftools --vcf populations_2lin_random/populations.snps.vcf --site-pi --keep documents/pop_canada40.txt --out FST/pi_canada
 ```
-However, these single-site estimates of π are not very meaningful. π is defined as the average number of nucleotide differences per site between two DNA sequences in all possible pairs in the sample population. That is the same reason why π averaged across polymorphic sites in Stacks is not meaningful either. π must be averaged across the whole length of the sequence you are analyzing (number of variant + invariant sites), whether it is a collection of RAD loci or whole chromosomes. [pixy](https://pixy.readthedocs.io/en/latest/) is an alternative tool that allows calculating π, d<sub>xy</sub> and F<sub>ST</sub> using a vcf file and its documentation provides a good explanation about this bias [(Korunes & Samuk 2021)](https://onlinelibrary.wiley.com/doi/10.1111/1755-0998.13326).
+However, these single-site estimates of π are not very meaningful. π is defined as the average number of nucleotide differences per site between two DNA sequences in all possible pairs in the sample population. That is the same reason why π averaged across polymorphic sites in Stacks is not meaningful either. π must be averaged across the whole length of the sequence you are analyzing (**number of variant + invariant sites**), whether it is a collection of RADseq loci or whole chromosomes. [pixy](https://pixy.readthedocs.io/en/latest/) is an alternative tool that allows calculating π, d<sub>xy</sub> and F<sub>ST</sub> using a VCF file and its documentation provides a good explanation about this bias [(Korunes & Samuk 2021)](https://onlinelibrary.wiley.com/doi/10.1111/1755-0998.13326).
 
->OBS! Because there are so many different ways to estimate F<sub>ST</sub>, it is important to always report the program and the methods used.**
+>OBS! Because there are so many different ways to estimate F<sub>ST</sub>, it is important to always report the program and the methods used.
 
 For example, Stacks adopts an AMOVA F<sub>ST</sub>-based approach by Weir (from Genetic Data Analysis II, chapter 5, "F Statistics," pp166-167), while VCFtools uses the F<sub>ST</sub> estimate by Weir and Cocherham (1984). These two methods may produce slightly different estimates. Furthermore, VCFtools generates a weighted estimate of F<sub>ST</sub> that may be better suited to capture genome-wide population differentiation.
 
 #### (Optional) Investigate structure in relation to geography
 
-To assess genetic structure in relation to geography and pre-existing partitions (e.g. sampling locations), we can also look into population pairwise F<sub>ST</sub>. Here is an extra tutorial to get a matrix of population pairwise F<sub>ST</sub> (for the 12 Canadian populations) and assess whether genetic differentiation is correlated with geographic distance (e.g., isolation-by-distance). If you have extra time, or need it in the future, you can find the tutorial at this link [Population pairwise F<sub>ST</sub> and IBD tutorial](Tutorial_day2_IBD_optional.md).
+To assess genetic structure in relation to geography and pre-existing partitions (e.g. sampling locations), we can also look into population pairwise F<sub>ST</sub>. Here is an extra tutorial to get a matrix of population pairwise F<sub>ST</sub> (for the 12 Canadian populations) and assess whether genetic differentiation is correlated with geographic distance (e.g., isolation-by-distance). If you have extra time, or need it in the future, you can find the tutorial following this link [Population pairwise F<sub>ST</sub> and IBD tutorial](Tutorial_day2_IBD_optional.md).
 
 
 ## 2-2. Principal Component Analysis (PCA)
 
-Population structure leads to systematic patterns in measures of mean relatedness between individuals in large genomic data sets, which are often discovered and visualized using dimension reduction techniques such as principal component analysis (PCA). The results of PCA can produce "maps" of population structure that may reflect the samples' geographic origin dirstored by rates of gene flow (November et al., 2008) or other intra-genome evolutionary processes that can bond or dispel certain groups of samples. Using PCA in genomics is quite simple without the need to diving into the math.
+Population structure leads to systematic patterns in measures of mean relatedness between individuals in large genomic data sets, which are often discovered and visualized using dimension reduction techniques such as principal component analysis (PCA). The results of PCA can produce "maps" of population structure that may reflect the samples' geographic origin distorted by rates of gene flow (November et al., 2008) or other intra-genome evolutionary processes that can bond or dispel certain groups of samples. Using PCA in genomics is quite simple without the need to diving into the math.
 
-For this analysis, we will convert vcf files into geno format (matrix of genotypes: 0,1,2) using the program VCFtools on the server.
+On the server, for this analysis we will convert VCF files into a "geno" format (matrix of genotypes: 0, 1, 2) using the program VCFtools.
 
-Here, we will work with two vcf files:
-* vcf file containing four populations with the two lineages (H, L, O, and U)
-* vcf file containing 12 populations from Canada (A-L)
+Here, we will work with two datasets (2 VCF files):
+* four populations with the two lineages (H, L, O, and U)
+* 12 populations from Canada (A-L)
 
-In genomics, PCA are multivariate analyses which could be biases by extremely rare variants (i.e. only represented by one sample)
+In genomics, PCA are multivariate analyses which could be biased by extremely rare variants (i.e. only represented by one sample)
 >Linck, E., & Battey, C. J. (2019). Minor allele frequency thresholds strongly affect population structure inference with genomic data sets. Molecular Ecology Resources, 19(3), 639–647. doi: 10.1111/1755-0998.12995, https://onlinelibrary.wiley.com/doi/abs/10.1111/1755-0998.12995
 
 So we will also restrict our matrix to the most frequent SNPs (MAF> 1%). We can do this using VCFtools:
@@ -154,13 +152,13 @@ vcftools --vcf populations_canada_random/populations.snps.vcf --maf 0.01 --012 -
 ```
 Once this is done, you will see via the Terminal, using `ls pca` (for listing all files in the directory), that six new files have been generate:
 
-* Two files ending with only `.012` contain genotypes information (0 for Ref homozygous, 1 for heterozygous, 2 for Alt homozygous and -1 for misisng data)
-* Two files ending with `.012.pos` contain a list of SNP ids (Chromosme and Position) from the vcf file
-* Two files ending with `.012.indv` contain a list of samples ids from the vcf file
+* Two files ending with only `.012` contain genotypes information (0 for reference homozygous, 1 for heterozygous, 2 for alternative homozygous and -1 for missing data)
+* Two files ending with `.012.pos` contain a list of SNP ids (chromosome and position) from the VCF file
+* Two files ending with `.012.indv` contain a list of samples ids from the VCF file
 
-In this folder we also have all the information about individuals. To explore the pca results, let's make a copy of the `pca/` folder from the server to your local computer. Download the six files that are inside the folder `~/02-day2/pca/`.
+In this directory we also have all the information about individuals. To explore the PCA results, let's make a copy of the `pca/` directory from the server to your local computer. Download the six files that are inside the directory `~/02-day2/pca/`.
 
-On your local computer, let's work in RStudio using `02_day2` as working directory (you can confirm this by using `getwd()`, or assign the working directory using `setwd()`).
+On your local computer, let's work in RStudio using `02_day2` as working directory (you can confirm this by using `getwd()`, or assign the working directory using `setwd("/path/to/your/directory")`).
 
 ### Load the required R packages
 ```R
@@ -171,16 +169,16 @@ library(tibble)
 library(ggplot2)
 library(reshape2)
 ```
-During the PCA tutorial, we will use the awesome `%>%`. This code feature is a pipe, which takes the output from one function and feed it to the first argument of the next function. You may have encountered the Unix pipe `|` before.
+During the PCA tutorial, we will use this nice symbol `%>%`. This code feature is a pipe, which takes the output from one function and feed it to the first argument of the next function. You may have encountered the Unix pipe `|` before.
 
 ### Load the input data files
 ```R
-# 1. load the population map
+# load the population map
 popmap <- read.table("pca/info_samples.csv", h = TRUE, sep = ";")
 # if this doesn't work, please import it manually or try 
 popmap <- read.csv("pca/info_samples.csv", sep = ";")
 
-# 2. load the geno data for the 2lin
+# load the geno data for the 2lin
 geno.012_2lin <- read.table("pca/populations_2lin_random.012")[, -1] # load the genotype matrix
 geno.012_2lin.pos <- read.table("pca/populations_2lin_random.012.pos") %>% # load SNPs info
 mutate(., locus = paste(V1, V2, sep = "_")) # create a new column for SNP info name (CHR + position)
@@ -191,20 +189,34 @@ dimnames(geno.012_2lin) <- list(geno.012_2lin.indv$V1, geno.012_2lin.pos$locus)
 # check the geno matrix
 geno.012_2lin[1:12, 1:9]
 ```
+This is printed on the screen:
 ```R
-     Chr1_37052 Chr1_53559 Chr1_76199 Chr1_102662 Chr1_116280 Chr1_144508 Chr1_223680 Chr1_225678 Chr1_264059
-L_01          0          0          0           0           0           0           0           0           0
-L_02          0          0          0           0           0           0           0           1           0
-L_03          0          0          0           0           0           1           0           0           0
-L_04          0          0          0           0           0           0           0           0           0
-L_05          0          0          0           0           0           0           0           0           0
-L_06          0          0          0           0           0           0           0           1           0
-L_07          0          0          0           0           0           0           0           0           0
-L_08          0          1          0           0           1           1           0           0           0
-L_09          0          0          0           0           0           0           0           0           0
-L_10          0          0          0           0           0           0           0           1           0
-L_11          0          1          0           0           0           0           0           1          -1
-L_12          0          0          0           0           0           0           0           0          -1
+     Chr1_37071 Chr1_53520 Chr1_73437 Chr1_76199 Chr1_91676
+L_01          0          0          0          0          0
+L_02          0          0          0          0          0
+L_03          0          1          0          0          0
+L_04          0          1          0          0          0
+L_05          0          0          0          0          0
+L_06          0          0          0          0          0
+L_07          0          1          0          0          0
+L_08          0          1          0          0          0
+L_09          0          0          0          0          0
+L_10          0          1          0          0          0
+L_11          0          0          0          0          0
+L_12          0          0          0          0          0
+     Chr1_116284 Chr1_149984 Chr1_215150 Chr1_219290
+L_01           0           0           1           0
+L_02           0           0           1           0
+L_03           0           0           0           0
+L_04           0           0           0           0
+L_05           0           0           1           0
+L_06           0           0           1           0
+L_07           0           0           1           0
+L_08           0           0           0           0
+L_09           0           0           0           0
+L_10           0           0           1           0
+L_11           0           0          -1           0
+L_12           0           0          -1           0
 ```
 ### Impute missing data
 Missing data in `*.012.geno` files from VCFtools are coded with -1. We will change it for NAs. And we will fill the NA values by the most common genotype across all samples for a given SNP:
@@ -215,13 +227,14 @@ geno.012_2lin.imp <- apply(geno.012_2lin,2,function(x){
                            replace(x, is.na(x), as.numeric(names(which.max(table(x)))))})
 ```
 >Why do you think is necessary to input missing values when performing a PCA?
+>Would you follow the same approach for reduced representation sequence (RRS) and whole genome sequence (WGS) data?
 
-### Run and visualise PCA
+### Run and visualize a PCA
 Next, we are ready to perform the PCA. The code is very simple, only one line!
 ```R
 pca.2lin <- prcomp(geno.012_2lin.imp)
 ```
-Now, we will look at some interesting stats from the PCA object. First we will plot the variances against the number of the principal component.
+Now, we will look at some interesting stats from the PCA object. First we will plot the variances against the number of the principal components:
 ```R
 screeplot(pca.2lin)
 ```
@@ -229,23 +242,24 @@ screeplot(pca.2lin)
 
 From the screeplot we can see that the amount of variation explained drops dramatically after the first component. This suggests that just one component may be sufficient to summarise the data.
 
-Next, we will check for the proportion of variance explained by each PC axis.
+Next, we will check for the proportion of variance explained by each PC axis using these commands:
 ```R
 # get stats info from the pca
 sum.pca <- summary(pca.2lin)
 # print stats info
 sum.pca$importance[, 1:5]
 ```
+You will see something like this:
 ```R
                             PC1      PC2      PC3      PC4      PC5
 Standard deviation     11.47642 2.867703 2.788018 2.730173 2.602429
 Proportion of Variance  0.26852 0.016770 0.015850 0.015200 0.013810
 Cumulative Proportion   0.26852 0.285290 0.301140 0.316330 0.330140
 ```
-Here you can see that the first PC axis (PC1) explains 27% of the total variance. Other PC axes explain about 1.5% of the variance.
+Here you can see that the first PC axis (PC1) explains 11.5% of the total variance. Other PC axes explain about 2% of the variance each.
 
-OK! Now we are ready to plot our PCA. There are many ways to do this, but here is an approach that uses the R library `ggplot2`, which is highly customizable. For this, we first make a synthetic dataframe which incorporates various features:
-* Number of PCs that we want to examine (usually we keep the first four PCs, but you can keep more)
+Now we are ready to plot our PCA. There are many ways to do this, but here is an approach that uses the R package called `ggplot2`, which is highly customizable. For this, we first make a synthetic dataframe that incorporates various features:
+* Number of PCs that we want to examine (usually we keep the first four PCs, but you can keep more if you like)
 * Sample ids
 * Populations info
 * Any other attribute of your samples (e.g. size, color, sex, etc.)
@@ -301,29 +315,27 @@ ggsave("pca/PCA_loadings.png", height = 4, width = 15)
 Here we can observe that many SNPs account for an elevated loading, which explains the structure of the PCA display above. Interestingly, we can observe that the SNPs with elevated loadings are spread across the genome.
 
 ### PCA on the Canadian dataset only
-Now let's do the same analysis for the other dataset composed by 12 populations.
+Now let's do the same analysis for the other dataset of 12 Canadian populations. Test it and tell us what your conclusions are about it. You can run exactly the same script by simply changing the input file names. Just be aware that when you run ggplot, you may need to provide more colour values due to the larger number of populations. You can also try colouring individuals by sex.
 
-Test it and tell us what your conclusions are about it. You can run exactly the same script by simply changing the input file names. Just be aware that when you run ggplot, you may need to provide more colour values due to the larger number of populations. You can also try colouring individuals by sex.
-
-Here is the script for the canadian populations, if you have not figured out already [PCA_12canada](pca/script_pca_12canada.r). And here is what you should observe: 
+Here is the script for the canadian populations, just in case [PCA_12canada](pca/script_pca_12canada.r). And here is what you should observe: 
 
 ![pca](images/pca_canada.jpeg)
 ![pca_sex](images/pca_can_bysex.jpeg)
 
 ![loadings](images/loadings_pca_canada.jpeg)
 
-A long story short, what drives PC1 is likely a chromosomal rearrangement that we will better explore on day 4. PC2 is driven by sex. In weakly-structured species, this kind of rearrangements or sex-linked loci can largely drive population structure patterns in a PCA, the Admixture/Structure analysis, and F<sub>ST</sub>. Therefore, it is sometimes a good idea to exclude these regions from these analyses, or work on a subset of linkage disequilibrium (LD)-pruned SNPs.
+A long story short, what drives PC1 is likely a chromosomal rearrangement that we will better explore on day 4. PC2 is driven by sex. In weakly-structured species, this kind of chromosomal rearrangements or sex-linked loci can largely drive population structure patterns in a PCA, the Admixture/Structure analysis, and F<sub>ST</sub>. Therefore, it is sometimes a good idea to exclude these regions from these analyses, or work on a subset of linkage disequilibrium (LD)-pruned SNPs.
 
 # Tutorial 2
 
 ## 2-3. Population structure with LEA
-Here, we will investigate population structure using LEA. Briefly, LEA is an R package developed by Eric Frichot and Olivier Fraņcois (Grenoble University, France), which is dedicated to landscape genomics and ecological association tests. This package includes many tools such as missing data imputation, genome scans for selection, testing for association between genotypes and environment, and analyses of population structure. Here, we only test the population structure approach, which is very easy to implement. If you want to learn more about LEA, feel free to visit its [R vignette](https://www.bioconductor.org/packages/devel/bioc/vignettes/LEA/inst/doc/LEA.pdf).
+Now we will investigate population structure using LEA. Briefly, LEA is an R package developed by Eric Frichot and Olivier Fraņcois (Grenoble University, France), which is dedicated to landscape genomics and ecological association tests. This package includes many tools such as missing data imputation, genome scans for selection, testing for association between genotypes and environment, and analyses of population structure. Here, we only test the population structure approach, which is very easy to implement. If you want to learn more about LEA, feel free to visit its [R vignette](https://www.bioconductor.org/packages/devel/bioc/vignettes/LEA/inst/doc/LEA.pdf).
 
-Here, we will screen for population structure among populations of two datasets, the `population_2lin_random.vcf` and the `population_canada_random.vcf` files.
+We will examine population structure in two datasets, the `population_2lin_random.vcf` and the `population_canada_random.vcf` files.
 
 Today, we will show you only the guidelines for the `population_2lin_random.vcf` dataset. Next, we let you to practice for the second one. 
 
-Because LEA is an R package, you need to work under the R environment. We recommend that you do it on your own computer, but you can always start a R session on the server with the command `R`.
+Because LEA is an R package, you need to work under the R environment. Thus, we recommend that you do it on your own computer.
 
 ### Prepare input files
 To conduct population structure analyses, LEA requires the input data in a specific file format (LEA geno-like format). The authors of the R package give us an useful function to easily convert the VCF file into this format, great 👍!
@@ -358,9 +370,9 @@ best = which.min(cross.entropy(obj, K = 2))
 ```
 <img src="images/LEA_crossentropy_populations_2lin.png" width="400" height="300">
 
-Here the lowest cross-emtropy value is clearly at *K* = 2, suggesting two genetic clusters within the dataset. Often, the plot shows a less clear pattern, and choosing the "knee/elbow/inflection" point is a generally good approach.
+Here the lowest cross-entropy value is clearly at *K* = 2 (lowest value), suggesting there are two genetic clusters within the dataset. Often, the plot shows a less clear pattern, and choosing the "knee/elbow/inflection" point is a generally good approach.
 
-The next step is to display a barplot for the ancestry matrix (also called the Q-matrix).
+The next step is to display a barplot of the ancestry matrix (also called the Q-matrix).
 
 ### Plot ancestry proportions across samples
 ```R
@@ -389,7 +401,7 @@ Let's start analyzing the reduced dataset including 80 individuals from Canada a
 library(adegenet)
 
 # load dataset and convert it from structure to genind format
-twolin <- import2genind("populations_2lin_random/populations.str", onerowperind = FALSE, n.ind = 80, n.loc = 8530)
+twolin <- import2genind("populations_2lin_random/populations.str")
 # this command will prompt questions about the structure of the file
 # note that for the file provided, there are 80 individuals and 8530 SNPs
 # column 1 contains labels for genotypes
@@ -440,8 +452,7 @@ scatter(dapc_canada2)
 
 If too few PCs (with respect to the number of individuals) are retained, useful information could be excluded from the analysis, and the resultant model might not be informative enough to accurately discriminate between groups. In contrast, if too many PCs are retained, this could have a destabilising effect on the coefficients extimated, leading to problems of overfit. In such cases, the model is able to describe all of the data in such detail that it becomes flexible enough to discriminate almost perfectly between any possible clusters.
 
-However, we can assess the trade-off between power of discrimination and over-fitting by calculating the alpha-score, which is the difference between the proportion of successful reassignment of the analysis (observed discrimination) and values obtained using random groups (random
-discrimination).
+However, we can assess the *trade-off between power of discrimination and over-fitting by calculating the alpha-score*, which is the difference between the proportion of successful reassignment of the analysis (*observed discrimination*) and values obtained using random groups (*random discrimination*):
 ```R
 temp1 <- optim.a.score(dapc_canada1)
 temp2 <- optim.a.score(dapc_canada2)
@@ -452,7 +463,7 @@ dapc_canada3 <- dapc(canada, n.da = 4, n.pca = 50)
 ```
 ![dapc_canada2](../images/plot_dapc_canada1_4-50.jpeg)
 
-Another way to examine the effect of the number of PCs chosen is through stucture-like plots made with the function `compoplot`, which indicate the assignment proportions of each individual.
+Another way to examine the effect of the number of PCs chosen is through stucture-like plots made with the function `compoplot`, which indicates the assignment proportions of each individual:
 ```R
 compoplot(dapc_canada1)
 ```
@@ -466,6 +477,6 @@ compoplot(dapc_canada3)
 ```
 ![compoplot1_canada1](../images/compoplot_canada3.jpeg)
 
-Although 200 PCs discriminate populations well, we know from low pairwise population F<sub>ST</sub> that differentiation is very low, which lead us to conclude that these high population assignments are the consequence of data over-fitting. On the other hand, the poor population assignemnt you obtain from 50 PCs is indicative of the weak population structure among the Canadian populations.
+Although 200 PCs discriminate populations well, we know from low pairwise population F<sub>ST</sub> that differentiation is very low, which lead us to conclude that these high population assignments are the consequence of data over-fitting. On the other hand, the poor population assignment you obtain from 50 PCs is indicative of the weak population structure among the Canadian populations.
 
-You can change pretty much everything in your plot and the authors of adegenet have put together a great [tutorial](https://adegenet.r-forge.r-project.org/files/tutorial-dapc.pdf).
+You can change pretty much everything in your plot ,and the authors of adegenet have put together a great [tutorial](https://adegenet.r-forge.r-project.org/files/tutorial-dapc.pdf).
