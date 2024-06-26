@@ -36,7 +36,7 @@ cd 02_day2
 
 There are many ways, approaches, software, and formulas to calculate F<sub>ST</sub>, a relative measure of population differentiation. Here we will use mainly [VCFtools](https://vcftools.github.io/index.html). If you want to explore Stacks for summary statistics in your spare time, you can find a specific tutorial [here](summary_stats_stacks.md).
 
-In VCFtools you need to provide two files, a file listing the samples for each population that should be included in the calculation, and a VCF file with all genetic variants and associated information. For the reduced dataset, including only 80 individuals from Greenland and Canada, you will find the list of samples for each of the two lineages in the `~/scripts/` folder. The VCF file name is `populations.snps.vcf`, one for each of the datsets we analyzed. For example, to calculate F<sub>ST</sub> in the smallest of the three datasets we produced, type:
+In VCFtools you need to provide two files, a file listing the samples for each population that should be included in the calculation, and a VCF file with all genetic variants and associated information. For the reduced dataset, including only 80 individuals from Greenland and Canada, you will find the list of samples for each of the two lineages in the `~/scripts/` folder. The VCF file name is `populations.snps.vcf`, one for each of the datasets we analyzed. For example, to calculate F<sub>ST</sub> in the smallest of the three datasets we produced, type:
 ```bash
 # activate the conda environment
 conda activate adaptg
@@ -226,7 +226,7 @@ geno.012_2lin[geno.012_2lin == -1] <- NA
 geno.012_2lin.imp <- apply(geno.012_2lin,2,function(x){
                            replace(x, is.na(x), as.numeric(names(which.max(table(x)))))})
 ```
->Why do you think is necessary to input missing values when performing a PCA?
+>Why do you think is necessary to impute missing values when performing a PCA?
 >Would you follow the same approach for reduced representation sequence (RRS) and whole genome sequence (WGS) data?
 
 ### Run and visualize a PCA

@@ -29,29 +29,27 @@
 # Tutorial 1
 Yesterday, we observed that our dataset included two highly divergent lineages (Canada vs. Greenland). Thus, to study environmental associations we will restrain our analysis to the Canadian 12 populations, which belong to the same lineage.
 
-To start, let's copy the directory **Day3** into your home directory, and go there with `cd`:
+To start, on the server, let's copy the directory **Day3** into the home directory, and go there with `cd`:
 ```bash
 cp -r ~/Share/physalia_adaptation_course/03_day3 .
 cd 03_day3 
 ```
-**OBS! Note that `03_day3/` will be our working directory for today's computer exercises. When copying this directory to your local computer, please maintain its hierarchical sub-tructure, as this will facilitate finding your files.**
+**OBS! Note that `03_day3/` will be our working directory for today's computer exercises. When copying this directory to your local computer, please maintain its structure, as this allows finding files using the same paths.**
 
-In the subfolder `02_data/` you can find a copy of the two VCF files generated (by you!) yesterday, and a few other useful files that will be required later:
+In the subfolder `02_data/` you can find a copy of the two VCF files generated yesterday, and a few other useful files that will be required later:
 - the VCF file of the 12 populations filtered at 1 SNP per locus
 - the VCF file of the 12 populations filtered at 1 SNP per locus without chr 5 (sex linked) and without the putative rearranged regions on chr4
-- an info file including sex, as well as population, latitude, longitude and temperature for the resticted dataset of 240 samples
+- an info file including sex, population, latitude, longitude and temperature for the restricted dataset of 240 samples
 - an info file about the 12 populations
 
 We provide these VCF files there to ensure that you can more easily start today's tutorial, and to reduce computational time, as the VCF files were already filtered for a MAF threshold of 1% (to avoid using rare SNPs, which are not interesting for the analysis we are doing today).
 
-You can have a look at the files with the command `head 02_data/file`, or `less 02_data/file` (to exit less, press `q`).
+You can have a look at the files with the command `head 02_data/file`, or `less 02_data/file` (to exit, press `q`).
 
 The VCF files need to be unzipped, which can be achieved with these commands:
 ```bash
 gunzip 02_data/canada.vcf.gz
-
 gunzip 02_data/canada_no45.vcf.gz
-
 ```
 
 To explore the first lines of the VCF file, you can use `less -S 02_data/filename`, which provides a nice visualization of the part of the file that fits your window, or `head -n 25 02_data/filename` to look at the first 25 lines.
@@ -60,24 +58,24 @@ We will work from the `03_day3` directory, and we will save our data within thei
 
 ## 3-1. Overall genetic structure & making a LD-pruned VCF file
 
-Before considering which variation of the genome is likely shaped by selection, we need to think about what is shaped by neutral processes and the interplay of drift, mutation and gene flow. One of the basic thing to do is thus to assess the genetic structure in our sampled area. It can be done by looking into PCA or STRUCTURE/ADMIXTURE analysis, as well as by looking into pairwise F<sub>ST</sub> between populations. This is something that you did yesterday, first on the two lineages, and then on the 12 populations from Canada.
+Before considering which variation of the genome is likely shaped by selection, we need to think about what is shaped by neutral processes and the interplay of drift, mutation, and gene flow. One of the basic thing to do is to assess the genetic structure in our sampled area. It can be done by looking into PCA or STRUCTURE/ADMIXTURE analysis, as well as by looking into pairwise F<sub>ST</sub> between populations. This is something that you did yesterday, first on the two lineages, and then on the 12 populations from Canada.
 
-Because we don't want to mix 2 lineages, today we will only work on the 12 Canadian populations. If you had time to go up to that point yesterday, you should have observed that there is basically no geographic structure in our 12 populations, which is somehow expected in a marine species. However, we saw that a region on chromosome 4 and sex-linked markers on chromosome 5 were overwhelming the population structure pattern. We will keep that in mind when interpreting our results.
+Today we will only work on the Canadian populations. If you had time to go up to that point yesterday, you should have observed that there is basically no geographic structure in our 12 Canadian populations, which is somehow expected in a marine species. However, we saw that a region on chromosome 4 and sex-linked markers on chromosome 5 were overwhelming the population structure pattern. We will keep that in mind when interpreting our results.
 
-Linkage disequilibrium (LD) can particularly bias the population structure, whether this is due to regions of low-recombination, variable SNP density, structural rearrangements, selection, etc. This will be particularly true with whole-genome data. So, a good practice to assess neutral structure is to generate a LD-pruned set of SNPs. This file will also be used by some of the outlier detection methods that we will use hereafter.
+Linkage disequilibrium (LD) can particularly bias the population structure, whether this is due to regions of low recombination, variable SNP density, structural rearrangements, selection, etc. This will be particularly true with whole-genome data. So, a good practice to assess neutral population structure is to generate a LD-pruned set of SNPs. This file will also be used by some of the outlier detection methods that we will use hereafter.
 
 For LD pruning we will use [PLINK](https://www.cog-genomics.org/plink/), which computes LD between SNPs by windows along the genome, and keeps one SNP out of several SNPs in linkage. Here we are interested in long distance LD (since we have already removed short-distance LD by keeping only one SNP per RAD locus), so we have set the window size quite large.
 
-PLINK requires a [BIM](https://www.cog-genomics.org/plink/1.9/formats#bim) file when the input data corresponds to a VCF file. We will create such file with the first line of commands in the code box below. Then, we save the run parameters as environment variables (i.e., `WINDOW`, `SNP`, `R2`). We chose to be very stringent by removing SNPs with a VIF>2 in windows of 100 SNPs or 100KB (alternatively, we could also have given a R² threshold with `--indep-pairwise $WINDOW $SNP $R2`).
+PLINK requires a [BIM](https://www.cog-genomics.org/plink/1.9/formats#bim) file when the input data corresponds to a VCF file. We will create such file with the first line of commands in the code box below. Then, we save the run parameters as bash environment variables (i.e., `WINDOW`, `SNP`, `R2`). We chose to be very stringent by removing SNPs with a VIF > 2 in windows of 100 SNPs or 100 Kb (alternatively, we could also have given a R² threshold with `--indep-pairwise $WINDOW $SNP $R2`). See the [PLINK 1.07 documentation](https://zzz.bwh.harvard.edu/plink/summary.shtml#prune) for some discussion of parameter choices.
 
-Next, we briefly explain what the commands below means. The `WINDOW=200000` parameter allows storing in a variable called "WINDOW" a value of 200000 bp. We next call this variable with `$WINDOW` in the plink line. Same for `SNP` and `R2`. The `--out` parameter allows us to give a prefix, on which PLINK will add a suffix describing the file name (e.g. `*.prune.in`).
+Next, we briefly explain what the commands below mean. The `WINDOW=200000` parameter allows storing in a variable called "WINDOW" a value of 200000 bp. We next call this variable with `$WINDOW` in the plink line. Same for `SNP` and `R2`. The `--out` parameter allows us to give a prefix, on which PLINK will add a suffix describing the file name (e.g. `*.prune.in`).
 
 ```bash
 # activate the conda environment
 conda activate adaptg
 
 # prepare files
-#gunzip 02_data/canada.vcf.gz  # use this command to uncompress the file
+gunzip 02_data/canada.vcf.gz # if not done already, use this command to uncompress the file
 plink --vcf 02_data/canada.vcf --make-bed --out 02_data/canada
 
 # store run paramters as environment variables
@@ -92,7 +90,7 @@ plink --bed 02_data/canada.bed \
 --indep-pairwise $WINDOW $SNP $R2 --allow-extra-chr \
 --out 02_data/canada
 ```
-Let's have a look at the files `02_data/canada.prune.in` and `02_data/canada.prune.out`. They include a list of SNP id, as displayed in the VCF file ("53:2:+"). This list will be useful for our subsequent analyses using OutFLANK. For other purposes, we may also want to have a VCF file with only LD-pruned markers. We are using again VCFtools with the `--exclude` option (and `recode`).
+Let's have a look at the files `02_data/canada.prune.in` and `02_data/canada.prune.out`. They include a list of SNP IDs, as displayed in the VCF file ("53:2:+"). This list will be useful for our subsequent analyses using OutFLANK. For other purposes, we may also want to have a VCF file with only LD-pruned markers. For this, we are using again VCFtools with the `--exclude` option (and `recode`).
 ```bash
 vcftools --vcf 02_data/canada.vcf --exclude 02_data/canada.prune.out --recode --out 02_data/canada.pruned
 ```
@@ -101,16 +99,16 @@ vcftools --vcf 02_data/canada.vcf --exclude 02_data/canada.prune.out --recode --
 ## 3-2. Investigate outliers of differentiation
 
 ### 3-2.1 With OutFLANK
-[OutFLANK](https://github.com/whitlock/OutFLANK) is an R package that implements the method developed by Whitlock and Lotterhos (https://www.journals.uchicago.edu/doi/10.1086/682949) that uses likelihood on a trimmed distribution of F<sub>ST</sub> values to infer the distribution of F<sub>ST</sub> for neutral markers. This distribution is then used to assign q-values to each locus to detect outliers that may be due to spatially heterogeneous selection.
+[OutFLANK](https://github.com/whitlock/OutFLANK) is an R package that implements the method developed by [Whitlock and Lotterhos](https://www.journals.uchicago.edu/doi/10.1086/682949) using likelihood on a trimmed distribution of F<sub>ST</sub> values to infer the distribution of F<sub>ST</sub> for neutral markers. This distribution is then used to assign q-values to each locus to detect outliers that may be due to spatially heterogeneous selection.
 
 >Whitlock, M. C., and K. J. Lotterhos. 2015. Reliable detection of loci responsible for local adaptation: Inference of a neutral model through trimming the distribution of FST. The American Naturalist. 186:S24–S36.
 
 This R package has a great vignette, which can be found [here](https://htmlpreview.github.io/?https://github.com/whitlock/OutFLANK/blob/master/inst/doc/OutFLANKAnalysis.html). We will more or less follow it today.
 
 #### Prepare the data
-Open R in the Terminal (type `R` to open and `q()` or `quit()` to escape) and convert our VCF file to the outflank format. You may prefer to run the program on your computer (but be aware that you may have problems with R.4). Feel free to do so but make sure you copy all the `03_day3` directory to your computer to keep using the same paths.
+Copy the `03_day3` directory from the server to your local computer. Using R in RStudio, we will convert our VCF file to the outflank format. 
 
-Let's convert our VCF file:
+Let's convert our VCF file with:
 ```R
 # load packages
 library(OutFLANK)
@@ -156,7 +154,7 @@ write.table(G, "02_data/geno_matrix.txt", sep="\t", col.names = FALSE, row.names
 ```
 We obtain a matrix of genotypes with `9` as missing data, 1411 rows for each SNP, and 240 columns for each individual.
 
-We will now use outFLANK to calculate F<sub>ST</sub> for each locus. It needs the information about populations. For OutFLANK we will keep only the pop column. Then we will calculate a F<sub>ST</sub> value for each SNP:
+We will now use OutFLANK to calculate F<sub>ST</sub> for each locus. It needs the information about populations. For OutFLANK we will keep only the pop column. Then we will calculate a F<sub>ST</sub> value for each SNP:
 ```R
 # import pop info
 info_samples_canada <- read.table("02_data/info_samples_canada.txt", header = TRUE)
@@ -415,9 +413,9 @@ This means that we will no longer look at overall average differentiation betwee
 To test for environnmental associations with BayPass, we will use the same script as before and just add the '-efile' option to provide a file summarizing environmental variation.
 
 #### Get environmental data and format env file 
-Today we will test for correlations between genotypes and temperature, which we have extracted for each population location from the database MarSPEC (for marine environments). bioOracle is another good option for marine environments, whereas WorldClim is a commonly used database for terrestrial environments. 
+Today we will test for correlations between genotypes and temperature, which we have extracted for each population location from the database MarSPEC (for marine environments). BioOracle is another good option for marine environments, whereas WorldClim is a commonly used database for terrestrial environments. 
 
-Here is an example script to extract environmental variables for each location of interest: [extract clim variables](tutorial_worldclim_optional.R)
+Here is an example script to extract environmental variables for each location of interest: [extract clim variables](tutorial_worldclim_optional.R). (**This script is not working at the moment, but an updated version will be provided later in the week**).
 
 The format of the environmental data file is one row for each environmenral variable and one column for each population location, without header.
 We have used the file `02_data/info_pop_geo_eco.txt` as input and format it in R to produce the file `05_baypass/env.txt`.

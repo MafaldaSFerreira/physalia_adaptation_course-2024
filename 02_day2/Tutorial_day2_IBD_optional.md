@@ -145,6 +145,7 @@ library(dplyr)
 library(magrittr)
 library(tibble)
 library(ggplot2)
+#library(geosphere) # additions?
 
 # import information about populations
 info_pop <- read.table("documents/info_pop_geo_eco.txt", header = TRUE)
@@ -152,6 +153,9 @@ head(info_pop)
 # calculate geographic (euclidian) distances between all pairs of populations
 distance <- geosphere::distm(info_pop[, c(3, 4)], fun = distGeo) %>%
   as.matrix(.)
+#distance <- geosphere::distm(info_pop[, c(4, 3)], fun = distGeo) %>%
+#  as.matrix(.)  # correct lat and long order?
+
 # change it from meters to km
 distance <- distance/1000
 
@@ -210,9 +214,9 @@ table(info_ind$pop, info_ind$sex)
   K 10 10
   L 10 10
  ```
-It seems that the field sampling has not been very good at balancing sex-ratio between populations. *We should be worried about sex-linked markers driving the clustering pattern!*. This may be one of the reasons why A and J are the most diferrentiated lineages.
+It seems that the field sampling has not been very good at balancing sex-ratio between populations. *We should be worried about sex-linked markers driving the clustering pattern!*. This may be one of the reasons why A and J are the most differentiated lineages.
 
-**OBS! We intentionaly subsetted the dataset to create this bias for learning purposes, as this issue may easily happen for some species or low sample sizes (the bias was controlled for in the publication).**
+**OBS! We intentional subsetted the dataset to create this bias for learning purposes, as this issue may easily happen for some species or low sample sizes (the bias was controlled for in the publication).**
 
 In the PCA analysis of the Canadian populations, we saw that a region on chromosome 4 and sex-linked markers on chromosome 5 were driving the population structure pattern. Will that influence our pairwise FST estimates? Possibly.
 
