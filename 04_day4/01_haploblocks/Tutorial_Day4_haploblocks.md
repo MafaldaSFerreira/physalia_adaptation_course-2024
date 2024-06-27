@@ -186,7 +186,7 @@ ggplot(mds_matrix, aes(x = mds3, y = mds4, colour = chrom)) +
   theme_classic()
 ```
 This is the output for MDS1 vs MDS2:
-![mds1_2](00_localPCA/images/mds1_2.png)
+![mds1_2](00_localPCA/images/mds1_2_v2.png)
 
 As you see, MDS1 and MDS2 are largely driven by Chr4 and Chr5. Let's look at the MDS scores along the genome to pinpoint the regions within chromosomes that are driving the signal.
 
@@ -209,7 +209,7 @@ ggplot(mds_matrix, aes(x = midpos, y = mds2, colour = chrom)) +
 ```
 
 This is the output for MDS2:
-![mds2_manhattan_plot](00_localPCA/images/mds2_position.png)
+![mds2_manhattan_plot](00_localPCA/images/mds2_position_v2.png)
 
 To follow-up, you can try to find approximately the breakpoints of those areas that appear as outliers (*Hint: find the windows with high MDS scores*). These outliers are approximately located 4.8-16.6 Mbp on chromosome 4 and the full chromosome 5.
 
