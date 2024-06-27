@@ -13,8 +13,8 @@
   - [Study linkage disequilibrium (LD) in the haplobock region](#study-linkage-disequilibrium-ld-in-the-haplobock-region)
     - [On the server: Calculate LD with PLINK](#on-the-server-calculate-ld-with-plink)
     - [On your computer: Plotting LD](#on-your-computer-plotting-ld)
-  - [Studying differentiation with FST (optional)](#studying-differentiation-with-fst-optional)
-  - [(Optional) Studying heterozygosity with the % of heterozygotes in each genotype group](#optional-studying-heterozygosity-with-the--of-heterozygotes-in-each-genotype-group)
+  - [Studying differentiation with FST](#studying-differentiation-with-fst)
+  - [Studying heterozygosity with the % of heterozygotes in each genotype group](#studying-heterozygosity-with-the--of-heterozygotes-in-each-genotype-group)
   - [About haploblocks](#about-haploblocks)
 
 
@@ -34,12 +34,12 @@ If not done already, enable the conda environment with `conda activate adaptg`.
 ### Local PCA along the genome to detect non-recombining haploblocks
 As you saw on day 2, the PCA performed on the 240 samples from the 12 populations from Canada displays a very unexpected pattern. The loadings indicate that some portions of the genome are overwhelmingly driving population structure, making us suspect there may be sex-linked markers and/or chromosomal rearrangements.
 
-To get a better sense of what's going on, we will be running a PCA again, but along the genome using windows of X number of SNPs. For this we will use the R package [lostruct]( https://github.com/petrelharp/local_pca), presented in this [publication](https://www.genetics.org/content/211/1/289).
+To get a better sense of what's going on, we will be running a PCA again, but along the genome using windows of X number of SNPs. For this we will use the R package [lostruct](https://github.com/petrelharp/local_pca), presented in this [publication](https://www.genetics.org/content/211/1/289).
 
 #### Prepare files
 We will skip the preparation of the file and the 1st steps of lostruct to read and prepare the windows because R does not communicate with bcftools on the AWS and we want to save you time. So keep in mind that there are preparative steps if you want to re-do the analysis on your dataset: 
 
-[Link to preliminary steps in_lostruct](~/04_day4/01_haploblocks/Step0_file_preparation.md)
+[Link to preliminary steps in_lostruct](Step0_file_preparation.md).
 
 __Tips on preparing an input file for this analysis:__ This analysis would be more powerful if we kept all SNPs, including those in LD. We use a bcf file as input for lostruct to make windows of your chosen size. We suggest to use window of 100 SNPs since coverage of the genome is low (RAD data) and we don't have a lot of SNPs. Typically, with whole genome data you may first run windows of 1000 or 5000 SNPs for a first look, and then refine the analysis with smaller windows. The analysis can be run chromosome by chromosome (as in the paper) or on the entire genome. Here, we are going for the entire genome.
 
@@ -228,9 +228,9 @@ option2 <- argv[2] # this variable captures the 2nd parameter
 ## 2. Explore the putative haploblock
 
 ### Genotype the individuals for the haploblocks
-Thanks to our local PCA exploration on Day 2, we know that there are non-recombining haploblocks, which may be indicative of an inversion on chromosome 4.
+Thanks to our local PCA exploration, we know that there are non-recombining haploblocks, which may be indicative of an inversion on chromosome 4. We have located the breakpoints approximately at 4.8 Mbp to 16.6 Mbp. 
 
-We have located the breakpoints approximately at 4.8 Mbp to 16.6 Mbp. We can make a PCA based on variants in that region only and use k-means approaches to classify the individuals into the three possible genotypes for the inversion (homozygotes standard AA, heterozygotes AB, homozygotes inversion BB). 
+We can make a PCA based on variants in that region only and use k-means approaches to classify the individuals into the three possible genotypes for the inversion (homozygotes standard AA, heterozygotes AB, homozygotes inversion BB). 
 
 To save time, you can find three lists `AA.list`, `AB.list` and `BB.list` in folder `02_data` containing the individuals for each genotype.
 
@@ -242,12 +242,9 @@ If you are interested in understanding how to perform the genotyping, you can ha
 ### Study linkage disequilibrium (LD) in the haplobock region
 
 #### On the server: Calculate LD with PLINK
-To calculate LD between all pairs of SNPs using the data for all individuals in our dataset we will use [PLINK](https://www.cog-genomics.org/plink/).
-We will remove SNPs at low frequency as they are not informative (>5% of frequency - we could have filter up to 5% or 10% with whole genome data). 
-We will focus on chromosome 4 but feel free to try other chromosomes.
+To calculate LD between all pairs of SNPs using the data for all individuals in our dataset we will use [PLINK](https://www.cog-genomics.org/plink/). We will remove SNPs at low frequency as they are not informative (>5% of frequency - we could have filter up to 5% or 10% with whole genome data). We will focus on chromosome 4 but feel free to try other chromosomes.
 
-PLINK requires three input files (`.bed`, `.bim`, `.fam`). The argument `--r2` calculates LD as an R<sup>2</sup> correlation between the genotypes at pair of SNPs, `--inter-chr` makes a long matrix (`--square` would make a square one).
-We need to add `--allow-extra-chromosome` since we are not working with human data and `--ld-window-r2 0` to require all output to be printed. To reduce the file you can choose here a minimum threshold for R<sup>2</sup>:
+PLINK requires three input files (`.bed`, `.bim`, `.fam`). The argument `--r2` calculates LD as an R<sup>2</sup> correlation between the genotypes at pair of SNPs, `--inter-chr` makes a long matrix (`--square` would make a square one). We need to add `--allow-extra-chromosome` since we are not working with human data and `--ld-window-r2 0` to require all output to be printed. To reduce the file you can choose here a minimum threshold for R<sup>2</sup>:
 ```bash
 # unzip vcf
 gunzip 02_data/canada.vcf.gz
@@ -333,7 +330,7 @@ We may be interested in calculating several statistics for each haplogroup (dive
 
 If you are interested in performing such an analysis, you can learn the details on how to do so by following this optional tutorial:
 
-[Fst_sliding_windows](Step4_fst.md)
+[Fst_sliding_windows](Step4_FST.md)
 
 These are the results:
 

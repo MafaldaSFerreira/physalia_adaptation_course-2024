@@ -71,7 +71,7 @@ Annual_mean_temp.crop <- crop(Annual_mean_temp, geographic_extent)
 mean_value_i <- mean(Annual_mean_temp.crop, na.rm = TRUE) / div
 
 x <- raster::extract(Annual_mean_temp.crop, na.rm = TRUE, FUN=mean) 
-
+x <- global(Annual_mean_temp.crop, mean, na.rm=TRUE)
 
 #mean_value_i <- mean(Annual_mean_temp.crop, na.rm = TRUE) / div
 range_value_i <- (range(Annual_mean_temp.crop, na.rm = TRUE)[2] - range(Annual_mean_temp.crop, na.rm = TRUE)[1]) / div
