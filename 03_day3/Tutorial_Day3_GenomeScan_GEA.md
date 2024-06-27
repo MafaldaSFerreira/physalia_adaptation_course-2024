@@ -8,17 +8,17 @@
     - [3-2.1 With OutFLANK](#3-21-with-outflank)
       - [Prepare the data](#prepare-the-data)
       - [Run OutFLANK on the LD-pruned SNPs and look at the distribution of FST](#run-outflank-on-the-ld-pruned-snps-and-look-at-the-distribution-of-fst)
-      - [Run OutFLANK on all SNPs, corrected by the trim dataset](#run-outflank-on-all-snps-corrected-by-the-trim-dataset)
+      - [Run OutFLANK on all SNPs, corrected by the trimmed dataset](#run-outflank-on-all-snps-corrected-by-the-trimmed-dataset)
     - [3-2.2 With BayPass](#3-22-with-baypass)
       - [Prepare files](#prepare-files)
       - [Run BayPass controlled for population structure](#run-baypass-controlled-for-population-structure)
       - [Set a threshold for the XtX value](#set-a-threshold-for-the-xtx-value)
-      - [Visualise results in Rstudio on your local computer](#visualise-results-in-rstudio-on-your-local-computer)
+      - [Visualize results in Rstudio on your local computer](#visualize-results-in-rstudio-on-your-local-computer)
 - [Tutorial 2](#tutorial-2)
   - [3-3. Genotype-Environment Associations](#3-3-genotype-environment-associations)
     - [3-3.1 With BayPass (locus by locus)](#3-31-with-baypass-locus-by-locus)
       - [Get environmental data and format env file](#get-environmental-data-and-format-env-file)
-      - [Visualise results in Rstudio on your local computer](#visualise-results-in-rstudio-on-your-local-computer-1)
+      - [Visualise results in Rstudio on your local computer](#visualise-results-in-rstudio-on-your-local-computer)
     - [3-3.2 With Redundancy Analysis (RDA) (multi-loci)](#3-32-with-redundancy-analysis-rda-multi-loci)
       - [Prepare data](#prepare-data)
       - [Run RDA on environmental variable and test it](#run-rda-on-environmental-variable-and-test-it)
@@ -150,7 +150,7 @@ dim(G)
 G[1:10,1:10]
 
 # as it will be useful later, we suggest to save this object as a text file
-write.table(G, "02_data/geno_matrix.txt", sep="\t", col.names = FALSE, row.names = FALSE)
+write.table(G, "02_data/geno_matrix.txt", sep = "\t", col.names = FALSE, row.names = FALSE)
 ```
 We obtain a matrix of genotypes with `9` as missing data, 1411 rows for each SNP, and 240 columns for each individual.
 
@@ -164,10 +164,11 @@ pop_vector <- info_samples_canada$pop
 # FST matrix with OutFLANK
 my_fst <- MakeDiploidFSTMat(t(G), locusNames = id_snp, popNames = pop_vector)
 ```
-Now we are ready to run OutFlANK. We will follow the best practices recommended by the authors:
-- remove SNPs with very low heterozygosity (options: Hmin = 0.1)
-- use the FSt uncorrected for population size (options: NoCorr = TRUE) (anyway, here all pop have 20 individuals)
-- Compare the FSt against a distribution based on independant SNPs (pruned for short-distance and long-distance LD)
+Now we are ready to run OutFLANK. We will follow the best practices recommended by the authors:
+- Remove SNPs with very low heterozygosity (options: Hmin = 0.1)
+- Use the F<sub>ST</sub> uncorrected for population size (options: NoCorr = TRUE) (anyway, here all pop have 20 individuals)
+- Compare the F<sub>ST</sub> against a distribution based on independent SNPs (pruned for short-distance and long-distance LD)
+
 We will use the list of pruned SNPs extracted with PLINK earlier.
 Note that other possibilities exists such as using the package `bigsnpr`.
 
@@ -204,7 +205,7 @@ dev.off()
 ![outflank_trim1](07_img_readme/outflank_prunedSNP_pvalues.jpeg)
 The p-value should be more or less flat and the distribution of F<sub>ST</sub> about normal.
 
-#### Run OutFLANK on all SNPs, corrected by the trim dataset
+#### Run OutFLANK on all SNPs, corrected by the trimmed dataset
 ```R
 P1 <- pOutlierFinderChiSqNoCorr(my_fst, Fstbar = out_trim$FSTNoCorrbar, dfInferred = out_trim$dfInferred, qthreshold = 0.05, Hmin = 0.1)
 head(P1)
@@ -214,7 +215,7 @@ library(dplyr)
 P1_pos <- dplyr::left_join(P1, chr_pos, by = c("LocusName" = "id_snp"))
 
 # We can have a look at the results by exporting the figures
-# we can look at the FSt as a function of heterozygosity to understand which snps have been evaluated, which one appear true or false outliers
+# we can look at the FST as a function of heterozygosity to understand which snps have been evaluated, which one appear true or false outliers
 #And we can look along the genome with our manhattan plots
 
 jpeg("04_outflank/outflank_outlier_fst_He.jpeg")
@@ -225,7 +226,7 @@ ggplot(P1_pos, aes(x = He, y = FST, colour = OutlierFlag)) +
 
 # note that we divide here position by 1000000 so the scale is in MB
 jpeg("04_outflank/outflank_outlier_fst.jpeg")
-ggplot(P1_pos, aes(x = position/1000000, y = FST, colour = OutlierFlag)) + 
+ggplot(P1_pos, aes(x = position / 1000000, y = FST, colour = OutlierFlag)) + 
   geom_point()+
   theme_classic()+
   facet_grid(cols = vars(chromosome), scales = "free_x", space = "free_x") +
@@ -242,7 +243,7 @@ What do you see?
 
 Lots of outliers are located on chr5, and/or chr4... Are we really surprised by this observation?
 
-Let's remember that we are analysing a species with extremely high gene flow. Moreover, we are looking here at outliers F<sub>ST</sub> accross all populations (without giving any geographic or environmental information). There is high genetic differentiation between the two sexes, and we have unbalanced sex-ratio in the sampling: this is probably driving the signal on chr 5. But there are also possibly adaptive loci on sex chromosomes... 
+Let's remember that we are analyzing a species with extremely high gene flow. Moreover, we are looking here at outliers F<sub>ST</sub> across all populations (without giving any geographic or environmental information). There is high genetic differentiation between the two sexes, and we have unbalanced sex-ratio in the sampling: this is probably driving the signal on chr 5. But there are also possibly adaptive loci on sex chromosomes... 
 
 What about chr 4? It may be that the chromosomal rearrangement is involved in local adaptation, or it is particularly divergent, and small fluctuations of frequency between populations are driving the signal?
 
@@ -253,7 +254,7 @@ There is accumulating literature suggesting that recombination is a very importa
 **Optional:** You may want to re-run the analysis on the SNP subset without chr4/chr5 to get a sense of what that says.
 
 ### 3-2.2 With BayPass
-To look at adaptive differentiation and environmental asssociations, we wil use [BayPass](http://www1.montpellier.inra.fr/CBGP/software/baypass/). The publication is here https://www.genetics.org/content/201/4/1555. 
+To look at adaptive differentiation and environmental associations, we wil use [BayPass](http://www1.montpellier.inra.fr/CBGP/software/baypass/). The publication is here https://www.genetics.org/content/201/4/1555. 
 >Mathieu Gautier. GENETICS December 1, 2015 vol. 201 no. 4 1555-1579; https://doi.org/10.1534/genetics.115.181453
 
 You can find a good manual [here](http://www1.montpellier.inra.fr/CBGP/software/baypass/files/BayPass_manual_2.2.pdf).
@@ -263,7 +264,7 @@ This package is an extension of the software [Bayenv](https://gcbias.org/bayenv/
 #### Prepare files
 To save time today, we will use the Toolbox package developed by Yann Dorant. You may be interested in looking at the scripts to understand how this is done.
 
-This Toolbox embeds various useful scripts in order to fastly convert VCF format to common pop genomics formats (genepop, StAMPP, BayPass, bayenv...). If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
+This Toolbox embeds various useful scripts in order to quickly convert VCF format to common pop genomics formats (genepop, StAMPP, BayPass, bayenv...). If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
 
 (*If not done already*) To download the Toolbox in your current working directory on the server (`03_day3`), use the following command line:
 ```bash
@@ -311,12 +312,12 @@ g_baypass -npop 12 -gfile 05_baypass/canada.baypass \
 -omegafile 05_baypass/prunedsnps.output_mat_omega.out \
 -outprefix 05_baypass/allsnps.controlled.output -nthreads 2
 ```
-Now copy the controlled output on your local computer. We can have a look at the output. the most importnat are the omega matrix, which is covariance between populations and the XtX value which represent a kind of value associated to each SNP. the higher it gets, the more this snps differentiate the populations.
+Now copy the controlled output on your local computer. We can have a look at the output. the most important are the omega matrix, which is covariance between populations and the XtX value which represent a kind of value associated to each SNP. the higher it gets, the more this snps differentiate the populations.
 
 If we don't want to control for population structure, we could have run it directly (**please do not run now**) with `g_baypass -npop 12 -gfile 05_baypass/canada.baypass -outprefix 05_baypass/allsnps.output -nthreads 1`.
 
 #### Set a threshold for the XtX value
-While this runs, we can prepare our subsequent analysis. We need to know above which XtX threhold value we can consider a locus to be an outlier of population differentiation.
+While this runs, we can prepare our subsequent analysis. We need to know above which XtX threshold value we can consider a locus to be an outlier of population differentiation.
 
 To look for that, the authors suggest to simulate a neutral distribution with a small R function, run BayPass on the simulated genotypes, and extract the distribution of XtX values. We can then chose a threshold of the 95% quantile, 99% quantile, etc. 
 
@@ -336,7 +337,7 @@ g_baypass -npop 12 -gfile 05_baypass/G.simulates_pods \
 Let's copy the output of the simulated dataset on your local computer for visualization.
 
 
-#### Visualise results in Rstudio on your local computer
+#### Visualize results in Rstudio on your local computer
 If you are curious, you can explore the different file, look at the omega matrix, etc, which will be more or less like the pairwise fst matrix that we look at earlier. We will focus on the XtX values:
 ```R
 # load package
@@ -360,7 +361,7 @@ ggplot(xtx_pos, aes(x = position, y = M_XtX, colour = chromosome)) +
   theme_classic() +
   facet_grid(cols = vars(chromosome), scales = "free_x", space = "free_x")
 ```
-Now we realised that we really need to know at which value we put the threshold
+Now we realised that we really need to know at which value we put the threshold:
 ```R
 # load XtX values from simulatd data
 xtx_simu <- read.table("05_baypass/simulate_controlled.output_summary_pi_xtx.out", header = TRUE)
@@ -410,7 +411,7 @@ BayPass can also test for correlations between the genotypic data and environmen
 
 This means that we will no longer look at overall average differentiation between populations, but test whether allele frequencies at each given SNP are correlated with phenotypic or environmental variation. With this approach, we can identify SNPs that are associated with a given phenotype or an enviornmental variable. 
 
-To test for environnmental associations with BayPass, we will use the same script as before and just add the '-efile' option to provide a file summarizing environmental variation.
+To test for environnmental associations with BayPass, we will use the same script as before and just add the `-efile` option to provide a file summarizing environmental variation.
 
 #### Get environmental data and format env file 
 Today we will test for correlations between genotypes and temperature, which we have extracted for each population location from the database MarSPEC (for marine environments). BioOracle is another good option for marine environments, whereas WorldClim is a commonly used database for terrestrial environments. 
@@ -546,10 +547,11 @@ The code to run a RDA is quite simple:
 # load package
 library(vegan)
 # run rda
-temp.rda <- library::rda(gen.imp ~ info$temperature, scale = TRUE)
+temp.rda <- vegan::rda(gen.imp ~ info$temperature, scale = TRUE)
 temp.rda
 ```
 Since we have only one variable, only RDA1 (the 1st axis) is meaningful.
+
 We can look at the fraction of variance explained by this RDA with:
 ```R
 RsquareAdj(temp.rda)
@@ -560,6 +562,7 @@ temp.signif.full <- anova.cca(temp.rda, parallel = getOption("mc.cores")) # defa
 temp.signif.full
 ```
 As you can see, temperature does not explain a large fraction of total variance (0.1%!!) but the model appears significant nonetheless. It likely means that very few loci covary with temperature and that this factor does not explain a large fraction of genetic variation as a whole. This is expected as most SNPs will likely be neutral or controlling a miryad of other traits.
+
 Yet, this formal test allows us to reject the null hypothesis that no linear relationship exists between the SNP data and the environmental factor.
 
 #### Analyse the RDA output
@@ -618,7 +621,7 @@ write.table(outlier_temp, "06_rda/outlier_temp_rda.txt", row.names = FALSE, quot
 ```
 ![rda1_loading_hist](07_img_readme/rda1_loading_hist.jpeg)
 
-We may also visualize the rda loadings along the genome:
+We may also visualize the RDA loadings along the genome:
 ```R
 # load package
 library(ggplot2)
@@ -629,8 +632,8 @@ ggplot(load.temp.rda.pos, aes(x = position, y = RDA1, colour = chromosome)) +
   geom_point() +
   theme_classic() +
   facet_grid(cols = vars(chromosome), scales = "free_x", space = "free_x") +
-  geom_hline(aes(yintercept =lim_min), linetype = "dotted", size = 1, show.legend = FALSE) +
-  geom_hline(aes(yintercept = lim_max), linetype = "dotted", size = 1, show.legend = FALSE)
+  geom_hline(aes(yintercept =lim_min), linetype = "dotted", linewidth = 1, show.legend = FALSE) +
+  geom_hline(aes(yintercept = lim_max), linetype = "dotted", linewidth = 1, show.legend = FALSE)
  dev.off()
 
 ```

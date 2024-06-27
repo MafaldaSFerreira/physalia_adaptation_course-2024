@@ -1,17 +1,15 @@
 # (Optional) Investigate structure in relation to geography <!-- omit from toc -->
 
->To be run on the Amazon server
-
 ## Table of contents <!-- omit from toc -->
 - [1. Pairwise differentiation between populations](#1-pairwise-differentiation-between-populations)
 - [2. Isolation by distance](#2-isolation-by-distance)
 
 ## 1. Pairwise differentiation between populations
-We will calculate here F<sub>ST</sub> between all pairs of populations. F<sub>ST</sub> accross the genome are expected to be largely driven by neutral markers while peaks of F<sub>ST</sub> may be related to selection for local adaptation. So we will first try to get a sense of the global pattern and then look for outliers.
+We will calculate here F<sub>ST</sub> between all pairs of populations. F<sub>ST</sub> across the genome are expected to be largely driven by neutral markers while peaks of F<sub>ST</sub> may be related to selection for local adaptation. So we will first try to get a sense of the global pattern and then look for outliers.
 
 To get pairwise F<sub>ST</sub>, we will use the R package `StAMPP`. To save some time today, we will use a toolbox developped by Yann Dorant. You may be interested in looking at the scripts to understand how this is done.
 
-This toolbox embeds various useful scripts in order to fastly convert a file in vcf format to common population genomics formats such as genepop, StAMPP, baypass, bayenv, among other. If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
+This toolbox embeds various useful scripts in order to fastly convert a file in vcf format to common population genomics formats such as genepop, StAMPP, BayPass, bayenv, among other. If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
 
 To download the toolbox in your current working directory on the server (02_day2), use the following command line:
 ```bash
