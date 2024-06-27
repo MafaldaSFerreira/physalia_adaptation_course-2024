@@ -37,7 +37,6 @@ Directory structure:
 │   └── pca_cluster.png
 ├── README.md
 ├── Step0_file_preparation.md
-├── Step0_file_preparation_240610.md
 ├── Step1_tuto.md
 ├── Step4_FST.md
 ├── Step5_Hobs.md
@@ -45,5 +44,5 @@ Directory structure:
 └── fixing_local_PCA
     └── solutions_240610.R
 
-10 directories, 32 files
+10 directories, 31 files
 ```

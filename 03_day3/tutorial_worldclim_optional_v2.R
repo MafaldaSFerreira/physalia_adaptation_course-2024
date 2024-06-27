@@ -1,84 +1,61 @@
-# (Optional) Script to extract environmental variables for each location of interest using Worldclim
+# (Optional) Script to extract abiotic environmental variables for each location 
+# of interest from WorldClim
+# initial version developed by Claire t al.
+# updated by Angela Fuentes Parod, email: apfpgen@gmail.com, June 27,204
+
+
+# Prepare the working environment -----------------------------------------
+
+# If not done already, install the geodata package (by executing the line below)
+#install.packages("geodata")
 
 # Load packages
 library(raster)
-#library(rgdal)
-library(terra)    # to install
-library(sdmpredictors)     # to install
+library(geodata)
+
+# set working directory
+setwd("~/Desktop/03_day3")
+
+# Load data ---------------------------------------------------------------
 
 # load location data
 location_GPS <- read.delim("02_data/info_pop_geo_eco.txt")
 
-###
-# we'll use functions of the 'sdmpredictors' package to access different online datasets
-pred_datasets <- list_datasets(terrestrial = TRUE, marine = TRUE)
-pred_datasets
-names(pred_datasets)
-pred_datasets[ , 1:4]  # these are the datasets currently available for download using the 'sdmpredictors' package; you can check their URLs for more info on their contents
-pred_datasets[ , c("dataset_code", "citation")]  # remember to ALWAYS cite the actual data sources, not just the package you used for downloading!
+# load environmental data from WorldClim
 
-pred_layers <- list_layers(datasets = pred_datasets)
-unique(pred_layers$dataset_code)
-unique(pred_layers[pred_layers$dataset_code == "WorldClim", ]$name)  # example of terrestrial variables dataset
-unique(pred_layers[pred_layers$dataset_code == "MARSPEC", ]$name)  # example of marine variables dataset
+# Ee will use the worldclim_global() function from the geodata package to 
+# download the bioclimatic variable data from WorldClim.
 
-# let's choose one dataset (e.g. WorldClim) and one particular set of variables (e.g. altitude and the bioclimatic ones, which are in rows 1 to 20):
-layers_choice <- unique(pred_layers[pred_layers$dataset_code == "WorldClim", c("name", "layer_code")])
-layers_choice
-layers_choice <- layers_choice[1:20, ]
-layers_choice
+# This function requires three these information:
+#  var = "bio": This tells worldclim_global() that we want to download all 19 of the bioclimatic variables, rather than individual temperature or precipitation measurements. 
+#2. res = 2.5: This is the resolution of the data we want to download; in this case, it is 2.5
+# minutes of a degree. For other resolutions, you can check the documentation by typing
+# ?worldclim_global into the console.
+# 3. path = "data/": Finally, this sets the location to which the files are downloaded. In our case, it is the data folder we created at the beginning.
 
-# define folder for downloading / fetching the variables' map layers:
-options(sdmpredictors_datadir = "../outputs/sdmpredictors")
-# load the layers to the current R session (downloading them if they aren't already in the folder defined above):
-layers <- load_layers(layers_choice$layer_code, rasterstack = FALSE)  # rasterstack=TRUE gives error when there are layers with different extent
-layers  # a list of raster maps
-# see how many elements in 'layers':
-length(layers)
-
-# plot a couple of layers to see how they look:
-names(layers)
-# convert each layer to 'SpatRaster' class (from package 'terra'), which is much faster to process:
-layers <- lapply(layers, rast)
-plot(layers[[1]], main = names(layers)[1])  # ignore errors if map is plotted anyway
-plot(layers[[5]], main = names(layers)[5])
-
-# find out if your layers have different extents or resolutions:
-unique(pred_layers[pred_layers$dataset_code == "WorldClim", ]$cellsize_lonlat)  # in this case 0.08333333 - spatial resolution can then be coarsened as adequate for your species data and modelling region (see below)
-sapply(layers, ext)  # if you get different extents (which doesn't happen with WorldClim, but may happen with other datasets), you'll have to crop all layers to the minimum common extent before proceeding
-# for example, if the first layer has the smallest extent:
-#layers <- lapply(layers, crop, extent(layers[[1]]))
-
-# once all layers have the same extent and resolution, you can combine them in a single multi-layer raster map:
-layers <- rast(layers)
-layers
-plot(layers)
-
-
-
-
-
-
-
-###
-
-r <- raster::getData("worldclim", var = "bio", res = 2.5)
+# Note also that after the files are downloaded to the data folder, they are read into memory
+# and stored in the variable called bioclim_data.
+r <- worldclim_global(var = "bio", res = 2.5, path = "02_data/") # this could take a few minutes
 div = 10 # precision of the data
 
 # 1 is mean temp, 12 is annual precipitations, etc...
 Annual_mean_temp <- r[[1]]
 variable <- paste0("bio1")
 
-# make a plot of the area
-aoi_area <- extent(min(location_GPS$longitude) - 1, 
-max(location_GPS$longitude) + 0.5, 
-min(location_GPS$latitude) - 1, 
-max(location_GPS$latitude) + 0.5)
 
-plot((crop(Annual_mean_temp, aoi_area) / div))
+# Make a plot of the area -------------------------------------------------
+
+# get the geographic extent area from the location data of our samples
+geographic_extent_area <- extent(min(location_GPS$longitude) - 1, 
+                                 max(location_GPS$longitude) + 0.5, 
+                                 min(location_GPS$latitude) - 1, 
+                                 max(location_GPS$latitude) + 0.5)
+# plot the base map
+plot((crop(Annual_mean_temp, geographic_extent_area) / div))
+# add the point for the locations
 points(location_GPS$longitude, location_GPS$latitude, pch = 19, col = 1, cex = 2)
 
-# to get data round a point of your choice like pop 1
+### Example of how to get env data around a location point of your choice (e.g. pop L in out locations data file)
 i = 1
 # determine the coordinates around your point
 long_min <- floor(location_GPS$longitude[i] * 10) / 10
@@ -87,55 +64,64 @@ lat_min <- floor(location_GPS$latitude[i] * 10) / 10
 lat_max <- ceiling(location_GPS$latitude[i] * 10) / 10
 
 # prepare the area
-aoi <- extent(long_min, long_max, lat_min, lat_max)
+geographic_extent <- extent(long_min, long_max, lat_min, lat_max)
 
 # get the value of the layer in the area
-Annual_mean_temp.crop <- crop(Annual_mean_temp, aoi)
-mean_value_i <- mean(Annual_mean_temp.crop@data@values, na.rm = TRUE) / div
-range_value_i <- (range(Annual_mean_temp.crop@data@values, na.rm = TRUE)[2] - range(Annual_mean_temp.crop@data@values, na.rm = TRUE)[1]) / div
+Annual_mean_temp.crop <- crop(Annual_mean_temp, geographic_extent)
+mean_value_i <- mean(Annual_mean_temp.crop, na.rm = TRUE) / div
+
+x <- raster::extract(Annual_mean_temp.crop, na.rm = TRUE, FUN=mean) 
+
+
+#mean_value_i <- mean(Annual_mean_temp.crop, na.rm = TRUE) / div
+range_value_i <- (range(Annual_mean_temp.crop, na.rm = TRUE)[2] - range(Annual_mean_temp.crop, na.rm = TRUE)[1]) / div
+#range_value_i <- (range(Annual_mean_temp.crop, na.rm = TRUE)[2] - range(Annual_mean_temp.crop, na.rm = TRUE)[1]) / div
 
 # print value
 location_GPS[i, ]
 mean_value_i
 range_value_i
 
-# to plot and all bioclim var from 1 to 12
-par(mfrow = c(4,3))
+##### How to plot all bioclim variables from 1 to 12
+par(mfrow = c(4, 3))
 
-for (j in 1:12) {
+for(j in 1:12) {
   x <- r[[j]] 
   div = 10
   variable <- c(variable, paste0("bioclim", j))
-  aoi_area <- extent(min(location_GPS$longitude) - 1, 
-  max(location_GPS$longitude) + 0.5, 
-  min(location_GPS$latitude) - 1, 
-  max(location_GPS$latitude) + 0.5)
+  geographic_extent_area <- extent(min(location_GPS$longitude) - 1, 
+                                   max(location_GPS$longitude) + 0.5, 
+                                   min(location_GPS$latitude) - 1, 
+                                   max(location_GPS$latitude) + 0.5)
 
-  plot((crop(x,aoi_area) / div), main = variable[j])
+  plot((crop(x,geographic_extent_area) / div), main = variable[j])
   points(location_GPS$longitude, location_GPS$latitude, pch = 19, col = 1, cex = 2)
   
 }
 
-# to record all bioclim var from 1 to 12
-# initialize matrix:
+#### How to record all bioclim var from 1 to 12
+
+# initialize matrix
 CLIM <- matrix(nrow = dim(location_GPS), ncol = 12)
 CLIM_range <- matrix(nrow = dim(location_GPS), ncol = 12)
 variable <- vector(length = 0)
 
 # loop over variables
-for (j in 1:12) {
+for(j in 1:12) {
+  #j = 1
+  
   # get layer of variable j
   x <- r[[j]] 
   div = 10
   # name it
   variable <- c(variable, paste0("bioclim", j))
   # plot it
-  aoi_area <- extent(min (location_GPS$longitude) - 1, 
-  max(location_GPS$longitude) + 0.5, 
-  min(location_GPS$latitude) - 1, 
-  max(location_GPS$latitude) + 0.5)
+  geographic_extent_area <- extent(min (location_GPS$longitude) - 1, 
+                                   max(location_GPS$longitude) + 0.5, 
+                                   min(location_GPS$latitude) - 1, 
+                                   max(location_GPS$latitude) + 0.5)
 
-  plot((crop(x, aoi_area) / div), main = variable[j])
+  plot((crop(x, geographic_extent_area) / div), main = variable[j])
   points(location_GPS$longitude, location_GPS$latitude, pch = 19, col = 1, cex = 2)
     
   # initialize vector for locations
@@ -143,23 +129,28 @@ for (j in 1:12) {
   clim_range <- vector(length = 0)
   
   # loop over populations
-  for (i in 1:dim(location_GPS)[1]) { 
+  for(i in 1:dim(location_GPS)[1]) {
+    #i = 1
+    
     # get square around pop i
     long_min <- floor(location_GPS$longitude[i] * 10) / 10
     long_max <- ceiling(location_GPS$longitude[i] * 10) / 10
     lat_min <- floor(location_GPS$latitude[i] * 10) / 10
     lat_max <- ceiling(location_GPS$latitude[i] * 10) / 10
-    aoi <- extent(long_min, long_max, lat_min, lat_max)
+    geographic_extent <- extent(long_min, long_max, lat_min, lat_max)
   
     # extract layer around pop i
-    x.crop <- crop(x, aoi)
+    x.crop <- crop(x, geographic_extent)
   
     # store info for variable j in a vector 
-    clim <-c (clim, mean(x.crop@data@values, na.rm = TRUE) / div)
-    clim_range <-c (clim_range, (range(x.crop@data@values, na.rm = TRUE)[2] - range(x.crop@data@values, na.rm = TRUE)[1]) / div)
+    clim <- c(clim, mean(x.crop, na.rm = TRUE) / div)
+    clim_range <- c(clim_range, (range(x.crop, na.rm = TRUE)[2] - range(x.crop, na.rm = TRUE)[1]) / div)
+    #clim_range <-c (clim_range, (range(x.crop, na.rm = TRUE)[2] - range(x.crop, na.rm = TRUE)[1]) / div)
 
-  }
+  }#End for loop over populations
+  
   # store info for variable j and all pop in a matrix
+  #j = 1
   CLIM[, j] <- clim
   CLIM_range[, j] <- clim_range
 }
@@ -226,12 +217,12 @@ Mean_SSS <- raster(paste("biogeo08_30s", sep = ""))
 variable <- paste("biogeo08", sep = "")
 
 # make a plot of the area
-aoi_area <- extent(min(location_GPS$longitude) - 1, 
+geographic_extent_area <- extent(min(location_GPS$longitude) - 1, 
 max(location_GPS$longitude) + 0.5, 
 min(location_GPS$latitude) - 1, 
 max(location_GPS$latitude) + 0.5)
 
-plot((crop(Mean_SSS, aoi_area) / div))
+plot((crop(Mean_SSS, geographic_extent_area) / div))
 points(location_GPS$longitude, location_GPS$latitude, pch = 19, col = 1, cex = 2)
 
 # to get data round a point of your choice like pop 1
@@ -243,12 +234,12 @@ lat_min <- floor(location_GPS$latitude[i]*10)/10
 lat_max <- ceiling(location_GPS$latitude[i]*10)/10
 
 # prepare the area
-aoi <- extent(long_min, long_max, lat_min, lat_max)
+geographic_extent <- extent(long_min, long_max, lat_min, lat_max)
 
 #get the value of the layer in the area
-Annual_mean_temp.crop <- crop(Annual_mean_temp,aoi)
-mean_value_i <- mean(Annual_mean_temp.crop@data@values, na.rm = TRUE) / div
-range_value_i <- (range(Annual_mean_temp.crop@data@values, na.rm = TRUE)[2] - range(Annual_mean_temp.crop@data@values, na.rm = TRUE)[1]) / div
+Annual_mean_temp.crop <- crop(Annual_mean_temp,geographic_extent)
+mean_value_i <- mean(Annual_mean_temp.crop, na.rm = TRUE) / div
+range_value_i <- (range(Annual_mean_temp.crop, na.rm = TRUE)[2] - range(Annual_mean_temp.crop, na.rm = TRUE)[1]) / div
 
 # print value
 location_GPS[i, ]
@@ -262,11 +253,11 @@ for (j in 1:10) {
   x <- raster(paste("biogeo", d[j], "_30s", sep = ""))
   variable <- c(variable,paste0("marspec", d[j]))
   
-  aoi_area <- extent(min(location_GPS$longitude) - 1, 
+  geographic_extent_area <- extent(min(location_GPS$longitude) - 1, 
   max(location_GPS$longitude) + 0.5,
   min(location_GPS$latitude) - 1, max(location_GPS$latitude) + 0.5)
 
-  plot((crop(x, aoi_area) / div), main = variable[j])
+  plot((crop(x, geographic_extent_area) / div), main = variable[j])
   points(location_GPS$longitude, location_GPS$latitude, pch = 19, col = 1, cex = 2)
   
 }
@@ -284,12 +275,12 @@ for (j in 1:10) {
   # name it
   variable <- c(variable, paste0("marspec",d[j]))
   # plot it
-  aoi_area <- extent(min(location_GPS$longitude) - 1, 
+  geographic_extent_area <- extent(min(location_GPS$longitude) - 1, 
   max(location_GPS$longitude) + 0.5, 
   min(location_GPS$latitude) - 1, 
   max(location_GPS$latitude) + 0.5)
 
-  plot((crop(x,aoi_area) / div), main = variable[j])
+  plot((crop(x,geographic_extent_area) / div), main = variable[j])
   points(location_GPS$longitude, location_GPS$latitude, pch = 19, col = 1, cex = 2)
   
   
@@ -304,14 +295,14 @@ for (j in 1:10) {
     long_max <- ceiling(location_GPS$longitude[i]*10)/10
     lat_min <- floor(location_GPS$latitude[i]*10)/10
     lat_max <- ceiling(location_GPS$latitude[i]*10)/10
-    aoi <- extent(long_min, long_max, lat_min, lat_max)
+    geographic_extent <- extent(long_min, long_max, lat_min, lat_max)
     
     # extract layer around pop i
-    x.crop <- crop(x, aoi)
+    x.crop <- crop(x, geographic_extent)
     
     # store info for variable j in a vector 
-    clim <- c(clim, mean(x.crop@data@values, na.rm = TRUE) / div)
-    clim_range <- c(clim_range, (range(x.crop@data@values, na.rm = TRUE)[2] - range(x.crop@data@values, na.rm = TRUE)[1]) / div)
+    clim <- c(clim, mean(x.crop, na.rm = TRUE) / div)
+    clim_range <- c(clim_range, (range(x.crop, na.rm = TRUE)[2] - range(x.crop, na.rm = TRUE)[1]) / div)
   }
   # sotre info for variable j and all pop in a matrix
   CLIM[, j] <- clim

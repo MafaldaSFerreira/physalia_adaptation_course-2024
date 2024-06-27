@@ -1,24 +1,48 @@
 # (Optional) Investigate structure in relation to geography <!-- omit from toc -->
 
+>NOTE (June 27, 2024)
+> As the R package StAMPP is not working on the server, this tutorial was updated to be run on your local computer.
+
+
 ## Table of contents <!-- omit from toc -->
 - [1. Pairwise differentiation between populations](#1-pairwise-differentiation-between-populations)
-- [2. Isolation by distance](#2-isolation-by-distance)
+- [2. Isolation by distance (IBD)](#2-isolation-by-distance-ibd)
 
 ## 1. Pairwise differentiation between populations
 We will calculate here F<sub>ST</sub> between all pairs of populations. F<sub>ST</sub> across the genome are expected to be largely driven by neutral markers while peaks of F<sub>ST</sub> may be related to selection for local adaptation. So we will first try to get a sense of the global pattern and then look for outliers.
 
-To get pairwise F<sub>ST</sub>, we will use the R package `StAMPP`. To save some time today, we will use a toolbox developped by Yann Dorant. You may be interested in looking at the scripts to understand how this is done.
+To get pairwise F<sub>ST</sub>, we will use the R package `StAMPP`. To save some time today, we will use a toolbox developed by Yann Dorant. You may be interested in looking at the scripts to understand how this is done.
 
-This toolbox embeds various useful scripts in order to fastly convert a file in vcf format to common population genomics formats such as genepop, StAMPP, BayPass, bayenv, among other. If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
+This toolbox embeds various useful scripts in order to easily convert a file in VCF format to common population genomics formats such as genepop, StAMPP, BayPass, bayenv, among other. If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
 
-To download the toolbox in your current working directory on the server (02_day2), use the following command line:
+To download the toolbox in your current working directory on the server (`02_day2`), use the following command line:
 ```bash
+cd
+cd 02_day2
+
 git clone https://gitlab.com/YDorant/Toolbox
 ```
 
-To run the Toolbox, the vcf file needs to be unzipped, which can be achieved with this command:
+Download the `Toolbox/` directory to your local machine, and place it inside your local copy of the `02_day2/` directory, so the path is `/path/to/02_day2/Toolbox/`.
+
+On you local computer, while inside the `02_day2/` directory, verify this file exists `head populations_canada_random/populations.snps.vcf.gz`. If does not, please download it from the server and make sure it is located in `/path/to/02_day2/populations_canada_random/`. Try again `head populations_canada_random/populations.snps.vcf.gz`, if lots of weird characters are printed on the screen, all good (this is expected because the file is compressed).
+
+To run the Toolbox, the VCF file needs to be unzipped, which can be achieved with this command:
 ```bash
 gunzip -k populations_canada_random/populations.snps.vcf.gz
+```
+If the VCF file was uncompressed without errors, by using this `head populations_canada_random/populations.snps.vcf` you will see:
+```bash
+##fileformat=VCFv4.2
+##fileDate=20200908
+##source="Stacks v2.53"
+##INFO=<ID=AD,Number=R,Type=Integer,Description="Total Depth for Each Allele">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allele Depth">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=HQ,Number=2,Type=Integer,Description="Haplotype Quality">
 ```
 
 Ok, now we are ready to convert our VCF files to the StAMPP file format. The toolbox have an easy way to do that with a bash script. This bash script requires four arguments:
@@ -27,6 +51,7 @@ Ok, now we are ready to convert our VCF files to the StAMPP file format. The too
 * `-f` output file format
 * `-o` output prefix name
 
+On the Terminal window on your local computer, type:
 ```bash
 # make the bash script executable with chmod +x
 chmod +x Toolbox/00-VCF_Reshaper.sh
@@ -41,19 +66,17 @@ Then, we can run the R script `StAMPP-fst.R` to compute pairwise F<sub>ST</sub> 
 * Output prefix
 * Number of CPU allowed (default CPU=1)
 
-**OBS! You may see some error messages indicating that temporary files cannot be deleted, which is not important.**
+**OBS! You may see some error messages indicating that temporary files cannot be deleted, which can be ignored.**
 
->Before using the tool, you have to install it on you own server session. *If not done already*, (on the server) open an R session by typing `R` in the Terminal. Proceed to install the required packages using the following lines. Use the commands below one-by-one, and answer "yes" if asked to install additional libraries. This process may take a few minutes and print on the screen lots of text. Please be patient and don't close the Terminal:
-```R
-install.packages("BiocManager")
-install.packages("varhandle")
-# install StAMPP via BioConductor pathway
-BiocManager::install("StAMPP")
-# once all is installed, quit R
-q()
-```
+>The next step requires that the R packages `varhandle` and `StAMPP` are available on your local computer. To verify if they are, open RStudio and execute:
+>```R
+>library(varhandle)
+>library(StAMPP)
+>library(geosphere)
+>```
+>If you don't get any error message, all good! Otherwise, please follow the instructions provided before the course on how to install these packages
 
-Here we are ready to run StAMPP and perform pairwise F<sub>ST</sub> calculations. (On the server) type in the Terminal:
+Now we are ready to run StAMPP and perform pairwise F<sub>ST</sub> calculations. On your local computer, in the Terminal execute this line os commands:
 ```bash
 Rscript Toolbox/StAMPP-fst.R canada.StAMPP canada 1
 ```
@@ -67,16 +90,13 @@ Once F<sub>ST</sub> calculations are done, you will see that four output files h
 
 Move these files to the `FST/` directory using `mv canada_fst*.txt FST`, then go to this directory with `cd FST`.
 
-You can explore each file with the command `less -S file.txt`. Today, we will focus on the F<sub>ST</sub> matrix.
-
-So, now you can export the whole `02_day2` directory to your local computer.
+You can explore each file with the command `less -S file.txt`, (e.g. `less -S FST/canada_fst_matrix.txt`). Today, we will focus on the F<sub>ST</sub> matrix.
 
 You will have the pairwise F<sub>ST</sub> matrix (file suffix `_fst_matrix.txt`) in the subfolder `FST/`, and the info files about populations in the sub-directory `documents/`:
-* documents/info_samples.csv
-* documents/popmap_canada.txt
+* `documents/info_samples.csv`
+* `documents/popmap_canada.txt`
 
 
-**[On your local computer]**
 In Rstudio on your computer, set you working directory as `02_day2`.
 
 We keep it simple and do a simple numeric matrix but you can imagine more fancy ways, with heatmaps or so.
@@ -134,16 +154,19 @@ Note that values go up to F<sub>ST</sub> = 0.02! But most of them are very low t
 
 >Why do you think A and J are so different? 
 
-## 2. Isolation by distance
+## 2. Isolation by distance (IBD)
 To explore whether the observed pattern relates to the geographic distance between populations, we will perform an Isolation-by-distance (IBD) test:
 ```R
+# if not done already
+install.packages("geosphere")
+
 # load packages
 library(reshape2)
 library(dplyr)
 library(magrittr)
 library(tibble)
 library(ggplot2)
-#library(geosphere) # additions?
+library(geosphere)
 
 # import information about populations
 info_pop <- read.table("documents/info_pop_geo_eco.txt", header = TRUE)
@@ -155,7 +178,7 @@ distance <- geosphere::distm(info_pop[, c(3, 4)], fun = distGeo) %>%
 #  as.matrix(.)  # correct lat and long order?
 
 # change it from meters to km
-distance <- distance/1000
+distance <- distance / 1000
 
 # set the colnames and rownames of the distance matrix
 dimnames(distance) <- list(info_pop$pop, info_pop$pop)
@@ -214,13 +237,13 @@ table(info_ind$pop, info_ind$sex)
  ```
 It seems that the field sampling has not been very good at balancing sex-ratio between populations. *We should be worried about sex-linked markers driving the clustering pattern!*. This may be one of the reasons why A and J are the most differentiated lineages.
 
-**OBS! We intentional subsetted the dataset to create this bias for learning purposes, as this issue may easily happen for some species or low sample sizes (the bias was controlled for in the publication).**
+**OBS! We intentionally subset the dataset to create this bias for learning purposes, as this issue may easily happen for some species or low sample sizes (the bias was controlled for in the publication).**
 
 In the PCA analysis of the Canadian populations, we saw that a region on chromosome 4 and sex-linked markers on chromosome 5 were driving the population structure pattern. Will that influence our pairwise FST estimates? Possibly.
 
-Let's re-run the steps above on the vcf in which we removed the chr5 and chr4 (skip that if you are late).
+On your own, re-run the steps above on the VCF file in which we removed the chr5 and chr4.
 
-Let's look at the pairwise F<sub>ST</sub> matrix and the IBD stats
+Take a look at the pairwise F<sub>ST</sub> matrix and the IBD stats of this file
 ![img_fst_all](../images/Fst_heatmap_no_chr4-5.png)
 
 >What do you see now?

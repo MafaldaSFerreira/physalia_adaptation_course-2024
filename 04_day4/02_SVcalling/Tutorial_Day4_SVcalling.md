@@ -1,14 +1,10 @@
-# Day 4. Tutorial on SVs (Optional) <!-- omit from toc -->
+# Day 4. Tutorial on SVs <!-- omit from toc -->
 
 ## Table of contents <!-- omit from toc -->
 - [4-2. Structural Variant (SV) calling from whole genome resequencing data](#4-2-structural-variant-sv-calling-from-whole-genome-resequencing-data)
     - [SVs calling](#svs-calling)
     - [VCF filtering and splitting](#vcf-filtering-and-splitting)
     - [PCA to compare patterns from different types of genetic variation](#pca-to-compare-patterns-from-different-types-of-genetic-variation)
-
-
-
-**NOTE:** This practical has been part of the course in previous editions. Although we will not cover it this year, we leave it here in case you would like to follow the pipeline and apply it on your own datasets.
 
 
 # 4-2. Structural Variant (SV) calling from whole genome resequencing data
@@ -39,7 +35,8 @@ delly filter -f germline -o germline.bcf merged.bcf
 ```
 However, in our case, we have low-coverage whole genome resequencing data from only 12 individuals, so we can call SVs directly from all the samples combined and forego the filtering step. Keep in mind that this is just a toy dataset, and the quality of these SV calls may not be very high.
 
-You can run the code immediately below on the server, but it will take > 1h. So, if you prefer to save some time and move forward in the tutorial, skip this part and go to the next block of commands.
+You can run the code immediately below on the server, but it will take > 4h. To save some time and move forward in the tutorial, skip this part and go to the next block of commands.
+
 ```bash
 cd
 cd wgr

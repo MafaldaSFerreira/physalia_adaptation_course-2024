@@ -266,7 +266,7 @@ To save time today, we will use the Toolbox package developed by Yann Dorant. Yo
 
 This Toolbox embeds various useful scripts in order to quickly convert VCF format to common pop genomics formats (genepop, StAMPP, BayPass, bayenv...). If you are interested to learn more about this toolbox, you will find the full description at https://gitlab.com/YDorant/Toolbox
 
-(*If not done already*) To download the Toolbox in your current working directory on the server (`03_day3`), use the following command line:
+To download the Toolbox in your current working directory on the server (`03_day3`), use the following command line:
 ```bash
 git clone https://gitlab.com/YDorant/Toolbox
 ```
