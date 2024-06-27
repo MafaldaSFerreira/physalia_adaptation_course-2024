@@ -39,7 +39,7 @@ To get a better sense of what's going on, we will be running a PCA again, but al
 #### Prepare files
 We will skip the preparation of the file and the 1st steps of lostruct to read and prepare the windows because R does not communicate with bcftools on the AWS and we want to save you time. So keep in mind that there are preparative steps if you want to re-do the analysis on your dataset: 
 
-[Link to preliminary steps in_lostruct](Step0_file_preparation.md).
+[Link to preliminary steps in_lostruct](Step0_file_preparation.md)
 
 __Tips on preparing an input file for this analysis:__ This analysis would be more powerful if we kept all SNPs, including those in LD. We use a bcf file as input for lostruct to make windows of your chosen size. We suggest to use window of 100 SNPs since coverage of the genome is low (RAD data) and we don't have a lot of SNPs. Typically, with whole genome data you may first run windows of 1000 or 5000 SNPs for a first look, and then refine the analysis with smaller windows. The analysis can be run chromosome by chromosome (as in the paper) or on the entire genome. Here, we are going for the entire genome.
 
@@ -347,8 +347,7 @@ Try to plot also the AA vs. AB, and AB vs. BB contrasts:
 A typical signature of inversions or regions of supressed recombination is elevated heterozygosity among putative heterozygote individuals. We can test this by calculating heterozygosity within the AB group. We will use the `--hardy` options for VCFtools which tests [Hardy-Weinberg equilibrium](https://en.wikipedia.org/wiki/Hardy%E2%80%93Weinberg_principle) for each SNP and report the observed and expected fraction of heterozygotes at each position.
 
 You can follow the tutorial to do so here:
-[Hobs_sliding_windows](Step5_Hobs.md)
-This tutorial also includes how to subset the VCF with VCFtools, filter for MAF, extract H-W statistics, and some re-formatting.
+[Hobs_sliding_windows](Step5_Hobs.md). This tutorial also includes how to subset the VCF with VCFtools, filter for MAF, extract H-W statistics, and some re-formatting.
 
 These are the results:
 
