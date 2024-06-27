@@ -333,7 +333,7 @@ We may be interested in calculating several statistics for each haplogroup (dive
 
 If you are interested in performing such an analysis, you can learn the details on how to do so by following this optional tutorial:
 
-[Fst_sliding_windows](Step4_fst.md)
+[Fst_sliding_windows](Step4_FST.md)
 
 These are the results:
 
@@ -350,8 +350,7 @@ Try to plot also the AA vs. AB, and AB vs. BB contrasts:
 A typical signature of inversions or regions of supressed recombination is elevated heterozygosity among putative heterozygote individuals. We can test this by calculating heterozygosity within the AB group. We will use the `--hardy` options for VCFtools which tests [Hardy-Weinberg equilibrium](https://en.wikipedia.org/wiki/Hardy%E2%80%93Weinberg_principle) for each SNP and report the observed and expected fraction of heterozygotes at each position.
 
 You can follow the tutorial to do so here:
-[Hobs_sliding_windows](Step5_Hobs.md)
-This tutorial also includes how to subset the VCF with VCFtools, filter for MAF, extract H-W statistics, and some re-formatting.
+[Hobs_sliding_windows](Step5_Hobs.md). This tutorial also includes how to subset the VCF with VCFtools, filter for MAF, extract H-W statistics, and some re-formatting.
 
 These are the results:
 
