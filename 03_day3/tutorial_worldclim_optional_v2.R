@@ -1,7 +1,7 @@
 # (Optional) Script to extract abiotic environmental variables for each location 
 # of interest from WorldClim
-# initial version developed by Claire t al.
-# updated by Angela Fuentes Parod, email: apfpgen@gmail.com, June 27,204
+# Initial version developed by Claire et al. 2023
+# Updated on June 28, 2024
 
 
 # Prepare the working environment -----------------------------------------

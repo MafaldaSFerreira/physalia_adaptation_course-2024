@@ -1,6 +1,7 @@
 # Extract environmental data for specific locations and do some data exploration
 # Angela Fuentes Pardo, e-mail: apfpgen@gmail.com
-# Last updated on: June 7, 2023
+# Created on: June, 2023
+# Last updated on: June 28, 2024
 #
 # DISCLAIMER: 
 # This script presents the general steps to extract environmental data available
