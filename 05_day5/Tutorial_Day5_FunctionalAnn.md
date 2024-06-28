@@ -16,7 +16,7 @@ Today, we will explore annotation of SNPs to see if they fall on genes of known 
 
 
 ## Getting started 
-First, copy the directory `05_day5` into your home directory and go there. We will work from there for teh rest of the tutorial:
+First, copy the directory `05_day5` into your home directory and go there. This will be our working directory for the rest of the tutorial:
 ```bash
 cd
 cp -r ~/Share/physalia_adaptation_course/05_day5 .
@@ -32,7 +32,7 @@ You don't need to copy these files as we have prepared simplified ones when need
 
 
 ## 5-1. SNP annotation with SnpEff 
-[SnpEff](https://pcingola.github.io/SnpEff/) is a program that uses the gene annotations in a `.gff` file format and the genomic position of each SNP to annotate the VCF file with the potential impact of genetic variants on genes and proteins, including changes in amino acids.
+[SnpEff](https://pcingola.github.io/SnpEff/) is a program that uses gene annotations in a `.gff` file and the genomic position of each SNP to annotate the VCF file with the potential impact of genetic variants on genes and proteins, including changes in amino acids.
 
 If you work on a model species which already has a database reported in snpEff, you are lucky! If not, you need to build a SnpEff database. 
 

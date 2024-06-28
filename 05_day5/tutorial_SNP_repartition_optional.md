@@ -3,7 +3,7 @@
 ### On your computer, in R studio
 Please copy the whole folder `05_day5` to your local computer, and set `05_day5` as your working directory in Rstudio.
 
-First, let's open the whole list of SNPs and look how many introns, UTR, intergenic regions, etc we have in our dataset:
+First, let's open the whole list of SNPs and look how many introns, UTR, intergenic regions, etc. we have in our dataset:
 
 ```R
 # load library
