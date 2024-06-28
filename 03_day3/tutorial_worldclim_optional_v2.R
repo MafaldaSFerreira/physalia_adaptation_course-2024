@@ -68,11 +68,7 @@ geographic_extent <- extent(long_min, long_max, lat_min, lat_max)
 
 # get the value of the layer in the area
 Annual_mean_temp.crop <- crop(Annual_mean_temp, geographic_extent)
-mean_value_i <- mean(Annual_mean_temp.crop, na.rm = TRUE) / div
-
-x <- raster::extract(Annual_mean_temp.crop, na.rm = TRUE, FUN=mean) 
-x <- global(Annual_mean_temp.crop, mean, na.rm=TRUE)
-
+mean_value_i <- global(Annual_mean_temp.crop, mean, na.rm = TRUE) / div
 #mean_value_i <- mean(Annual_mean_temp.crop, na.rm = TRUE) / div
 range_value_i <- (range(Annual_mean_temp.crop, na.rm = TRUE)[2] - range(Annual_mean_temp.crop, na.rm = TRUE)[1]) / div
 #range_value_i <- (range(Annual_mean_temp.crop, na.rm = TRUE)[2] - range(Annual_mean_temp.crop, na.rm = TRUE)[1]) / div
@@ -142,8 +138,9 @@ for(j in 1:12) {
     # extract layer around pop i
     x.crop <- crop(x, geographic_extent)
   
-    # store info for variable j in a vector 
-    clim <- c(clim, mean(x.crop, na.rm = TRUE) / div)
+    # store info for variable j in a vector
+    clim <- c(clim, global(x.crop, mean, na.rm = TRUE) / div)
+    #clim <- c(clim, mean(x.crop, na.rm = TRUE) / div)
     clim_range <- c(clim_range, (range(x.crop, na.rm = TRUE)[2] - range(x.crop, na.rm = TRUE)[1]) / div)
     #clim_range <-c (clim_range, (range(x.crop, na.rm = TRUE)[2] - range(x.crop, na.rm = TRUE)[1]) / div)
 

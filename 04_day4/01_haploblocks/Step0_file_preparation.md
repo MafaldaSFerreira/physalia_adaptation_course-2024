@@ -19,6 +19,7 @@ tabix -fp vcf 00_localPCA/capelin_NWA_sorted.vcf.gz
 bcftools convert -O b 00_localPCA/capelin_NWA_sorted.vcf.gz > 00_localPCA/capelin_NWA_sorted.bcf
 bcftools index 00_localPCA/capelin_NWA_sorted.bcf
 ```
+Deactivate the conda environment with `conda deactivate`.
 
 To check whether this has worked and produced files, you can do a quick ```ls -lh``` which will show you the size of the files in human-readable format
 
