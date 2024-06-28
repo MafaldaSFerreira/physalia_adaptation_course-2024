@@ -89,7 +89,7 @@ Here is a small tutorial (optional) to look at SNP repartition:
 Bedtools is a great program to find the intersection between two files. It usually works on a specific [`.bed`](https://ensembl.org/info/website/upload/bed.html) format which has at least three columns (Chromosome, StartPosition, EndPosition) and 12 columns to the maximum.
 It won't like having header. We will keeep a 4th column with SNP ID.
 
-Inspected the previously prepared annotation file in `.bed` format:
+Inspect the previously prepared annotation file in `.bed` format:
 ```bash
 less -S 05_bed/genome_mallotus_dummy_annotation_simplified.bed
 ```
@@ -132,7 +132,7 @@ outlier_temp_rda_bed <- outlier_temp_rda[, c(2, 5, 6, 1)]
 write.table(outlier_temp_rda_bed, "05_bed/outlier_temp_rda.bed", row.names = FALSE, sep = "\t", quote = FALSE, col.names = FALSE)
 ```
 
-Apart from generating a `.bed` file containing the position of genes around RDA outliers, we also need a `.bed` file for all SNPs in our dataset. In the gene enrichment analysis, we will ask if we have an enrichment of a specific category of genes in the RDA SNP outliers against this set of background genes in out entire SNP dataset:
+Apart from generating a `.bed` file containing the position of genes around RDA outliers, we also need a `.bed` file for all SNPs in our dataset. In the gene enrichment analysis, we will ask if we have an enrichment of a specific category of genes in the RDA SNP outliers against this set of background genes in our entire SNP dataset:
 ```R
 # all SNPs positions in our dataset
 all_snps <- read.table("03_outliers/SNP_pos.txt", header = TRUE)
@@ -159,6 +159,9 @@ The command `>` redirects the output into the file of your choice.
 With the command `wc -l` we will count the lines to see how many transcripts intersect with the outlier SNPs.
 
 ```bash
+# activate conda environment
+conda activate adaptg
+
 # find the intersection between the genomic location of outlier regions and the location of transcripts
 bedtools intersect -a 05_bed/outlier_temp_rda.bed -b 05_bed/genome_mallotus_dummy_annotation_simplified.bed -wb > 05_bed/outlier_temp_rda.intersect
 
@@ -206,7 +209,7 @@ library(goseq)
 ### Prepare a file with the correspondence between transcripts and gene ontology terms
 Again, as we are using a non-model organism (and a dummy genome), there is no database of our transcriptome and GO terms in the library, so we will build it.
 
-We have prepared a simplified annotation of the transcripts, and removed duplicates as much as possible. In fact, when a genome gets annotated, or when contigs from a transcriptome are aligned to a genome, one may have mutliple matches, which in turn may inflate our calculations. This also occurs when one SNP overlaps with a gene which has several transcripts - the SNP will have as many annotations as the number of transcripts. This needs to be taken into account by removing multiple matches:
+We have prepared a simplified annotation of the transcripts, and removed duplicates as much as possible. In fact, when a genome gets annotated, or when contigs from a transcriptome are aligned to a genome, one may have multiple matches, which in turn may inflate our calculations. This also occurs when one SNP overlaps with a gene which has several transcripts - the SNP will have as many annotations as the number of transcripts. This needs to be taken into account by removing multiple matches:
 ```R
 transcript_info = read.table("06_go/transcript_go_simplified.txt", header = TRUE, stringsAsFactors = FALSE, sep = "\t")
 head(transcript_info)
@@ -260,6 +263,7 @@ Now we will use the information about the size of the gene to correct for the fa
 We will use the `left_join()` command from dplyr to match two data.frames by transcript name, maintaining the rest of the information in the data.frames.
 
 ```R
+# load library
 library(dplyr)
 # add size info
 all_transcripts <- left_join(all_transcripts, transcript_info[, c(1,3)])

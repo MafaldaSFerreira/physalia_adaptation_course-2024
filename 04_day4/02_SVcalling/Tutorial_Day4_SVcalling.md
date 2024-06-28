@@ -87,26 +87,34 @@ vcftools --vcf capelin_sv.vcf \
     --stdout > capelin_sv_filtered.vcf
 ```
 Then, we can split the VCF file by SV type (or extract one particular SV type of interest with this script
+
 ```bash
-# insertions
-grep "#" capelin_sv_filtered.vcf > capelin_sv_ins.vcf && grep "SVTYPE=INS" capelin_sv.vcf >> capelin_sv_ins.vcf 
 
-# deletions
-grep "#" capelin_sv_filtered.vcf > capelin_sv_del.vcf && grep "SVTYPE=DEL" capelin_sv.vcf >> capelin_sv_del.vcf
+# bgzip the vcf to work with bcftools:
+bgzip capelin_sv_filtered.vcf
+bcftools index capelin_sv_filtered.vcf.gz
 
-# inversions
-grep "#" capelin_sv_filtered.vcf > capelin_sv_inv.vcf && grep "SVTYPE=INV" capelin_sv.vcf >> capelin_sv_inv.vcf
+bcftools view -i 'SVTYPE=="INS"' -O z -o capelin_sv_ins.vcf.gz capelin_sv.vcf.gz
+bcftools view -i 'SVTYPE=="DEL"' -O z -o capelin_sv_del.vcf.gz capelin_sv.vcf.gz
+bcftools view -i 'SVTYPE=="INV"' -O z -o capelin_sv_inv.vcf.gz capelin_sv.vcf.gz
+bcftools view -i 'SVTYPE=="DUP"' -O z -o capelin_sv_dup.vcf.gz capelin_sv.vcf.gz
+bcftools view -i 'SVTYPE=="BND"' -O z -o capelin_sv_bnd.vcf.gz capelin_sv.vcf.gz
 
-# duplications
-grep "#" capelin_sv_filtered.vcf > capelin_sv_dup.vcf && grep "SVTYPE=DUP" capelin_sv.vcf >> capelin_sv_dup.vcf
+# Filter for missing data
+# Let's do a low filtering here just to make sure we don't have any loci with missing data for all individuals
+# We require at least 2 genotypes on the entire dataset:
 
-# breakends
-grep "#" capelin_sv_filtered.vcf > capelin_sv_bnd.vcf && grep "SVTYPE=BND" capelin_sv.vcf >> capelin_sv_bnd.vcf
+vcftools --gzvcf capelin_sv_ins.vcf.gz --max-missing-count 2 --recode --stdout > capelin_sv_ins_filtered.vcf
+vcftools --gzvcf capelin_sv_del.vcf.gz --max-missing-count 2 --recode --stdout > capelin_sv_del_filtered.vcf
+vcftools --gzvcf capelin_sv_inv.vcf.gz --max-missing-count 2 --recode --stdout > capelin_sv_inv_filtered.vcf
+vcftools --gzvcf capelin_sv_dup.vcf.gz --max-missing-count 2 --recode --stdout > capelin_sv_dup_filtered.vcf
+vcftools --gzvcf capelin_sv_bnd.vcf.gz --max-missing-count 2 --recode --stdout > capelin_sv_bnd_filtered.vcf
 
 ```
 ... and count the number of SV identified, overall or for each type with:
+Note that this will 1 - actuall number of SNPs because `wc -l is counting the number of new lines 
 ```bash
-grep -v "#" capelin_sv_ins.vcf | wc -l
+bcftools stats capelin_sv_filtered.vcf | grep "number of records:"
 ```
 What is the most abundant SV type?
 
@@ -116,11 +124,11 @@ Next, we'll convert the genotypes in `.012` format for PCA of the whole dataset 
 vcftools --vcf capelin_sv_filtered.vcf --012 --out capelin_sv
 
 # and for each SV type
-vcftools --vcf capelin_sv_ins.vcf --012 --out capelin_sv_ins
-vcftools --vcf capelin_sv_del.vcf --012 --out capelin_sv_del
-vcftools --vcf capelin_sv_inv.vcf --012 --out capelin_sv_inv
-vcftools --vcf capelin_sv_dup.vcf --012 --out capelin_sv_dup
-vcftools --vcf capelin_sv_bnd.vcf --012 --out capelin_sv_bnd
+vcftools --vcf capelin_sv_ins_filtered.vcf --012 --out capelin_sv_ins_filtered
+vcftools --vcf capelin_sv_del_filtered.vcf --012 --out capelin_sv_del_filtered
+vcftools --vcf capelin_sv_inv_filtered.vcf --012 --out capelin_sv_inv_filtered
+vcftools --vcf capelin_sv_dup_filtered.vcf --012 --out capelin_sv_dup_filtered
+vcftools --vcf capelin_sv_bnd_filtered.vcf --012 --out capelin_sv_bnd_filtered
 ```
 Download the resulting files on your computer.
 

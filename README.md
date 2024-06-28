@@ -98,7 +98,9 @@ Please follow the [instructions shared by Carlo](Connection_to_the_Amazon_EC2_se
 
 4-1: Investigating haplotypes blocks (~inversions?)
 
-This tutorial include working on local PCA, but also calculation of LD, F<sub>ST</sub> and observed fraction of heterozygotes which may be useful in other contexts
+This tutorial include working on local PCA, but also calculation of LD, F<sub>ST</sub> and observed fraction of heterozygotes which may be useful in other contexts.
+
+4-2: SV calling
 
 ### Day 5: Functional approaches
 
